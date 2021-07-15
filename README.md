@@ -12,7 +12,7 @@ The following **required** functionality is completed:
 * [ ]	Rescuer can **sign in** using OAuth login
 * [ ]	Rescuer can **view people in need of help** in the search screen
   * [ ] Rescuer can see username, details on risk, urgency rating and associated pictures. (stored on Parse Database) 
-  * [ ] Rescuer is displayed the [relative timestamp](https://gist.github.com/nesquena/f786232f5ef72f6e10a7) for each person "8m", "7h"
+  * [ ] Rescuer is displayed the [relative timestamp](https://gist.github.com/nesquena/f786232f5ef72f6e10a7) for each risk "8m", "7h"
   * [ ] Rescuer can "like" a person in need on the search screen to indicate to other rescuers that they are dealing with it
   * [ ] Rescuer can search for a "risk" based on type
   * [ ] Rescuer can filter out people in need based on most recent and type
