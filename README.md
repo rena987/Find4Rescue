@@ -16,13 +16,14 @@ The following **required** functionality is completed:
   * [ ] Rescuer can "like" a person in need on the search screen to indicate to other rescuers that they are dealing with it
   * [ ] Rescuer can search for a person in need based on username
   * [ ] Rescuer can filter out people in need based on urgency and most recent
-  * [ ] User can **pull down to refresh search screen**
-* [ ] Rescuer can **chat with person in need** using Parse Chat Application
-  * [ ] Rescuer can **send and receive pictures** through this chat feature 
+  * [ ] Rescuer can **pull down to refresh search screen**
+  * [ ] Rescuer can create a new "risk" on search screen 
+  * [ ] Rescuer can view and create comments on each "risk" screen 
+  * [ ] Rescuer can take or upload picture to add to risk screen 
 * [ ] Rescuer can **view arcGIS map** on map screen
-  * [ ] Rescuer can view current location of person they are trying to rescue 
   * [ ] Rescuer can view locations of all the other rescuers 
-  * [ ] Rescuer can view polygon lines of the county they are in (important in connecting with other rescuers!) 
+  * [ ] Rescuer can view parcel polygon lines of the county they are in (important in connecting with other rescuers!) 
+  * [ ] Rescuer can view highlighted parcel polygons they have selected to help 
 
 The following **stretch** features are implemented:
 
