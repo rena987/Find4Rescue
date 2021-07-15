@@ -2,7 +2,7 @@
 
 ## Wireframes
 
-![20210713_191147](https://user-images.githubusercontent.com/47072485/125536837-3f3fbf2a-6383-4329-940a-0f2eb7308efe.jpg)
+![Wireframes2](https://user-images.githubusercontent.com/47072485/125831227-3d936594-abdf-4649-b568-93a861e90172.jpg)
 
 
 ## User Stories
