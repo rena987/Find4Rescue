@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    tools:context=".activities.LoginActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="100dp"
+        android:text="@string/app_name"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:textColor="@color/crayolas_gold"/>
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitle"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:textColorHint="#B8B8B8"
+        android:textColor="#B8B8B8"
+        android:backgroundTint="#B8B8B8"
+        android:hint="Username"/>
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="25dp"
+        android:inputType="textPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etUsername"
+        android:textColorHint="#B8B8B8"
+        android:textColor="#B8B8B8"
+        android:backgroundTint="#B8B8B8"
+        android:ems="10"
+        android:hint="Password"/>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etPassword"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="120dp"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="44dp"
+        android:text="Login"
+        android:backgroundTint="@color/crayolas_gold" />
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_below="@id/btnLogin"
+        android:layout_marginTop="-14dp"
+        android:src="@drawable/logo" />
+
+    <LinearLayout
+        android:id="@+id/llSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ivLogo"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="90dp"
+            android:textColor="#B8B8B8"
+            android:text="Don't have an account?"/>
+
+        <Button
+            android:id="@+id/btnSignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-10dp"
+            android:background="#00000000"
+            android:textColor="#888888"
+            android:text="Sign Up"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

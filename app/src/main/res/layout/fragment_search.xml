@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.SearchFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRisks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rvRisks"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="-100dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddRisk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/crayolas_gold"
+            android:src="@drawable/ic_baseline_add_24"
+            app:fabSize="normal"/>
+
+
+    </FrameLayout>
+
+</RelativeLayout>

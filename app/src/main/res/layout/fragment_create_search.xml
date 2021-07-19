@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    tools:context=".fragments.CreateSearchFragment">
+
+
+    <TextView
+        android:id="@+id/tvCoordinates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/etLatitude"
+        android:layout_marginBottom="4dp"
+        android:labelFor="@id/etLatitude"
+        android:text="Coordinates: " />
+
+    <EditText
+        android:id="@+id/etLatitude"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tvCoordinates" />
+
+    <EditText
+        android:id="@+id/etLongitude"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/etLatitude" />
+
+    <TextView
+        android:id="@+id/tvCreateAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/etCreateAddress"
+        android:text="Address: "/>
+
+    <EditText
+        android:id="@+id/etCreateAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tvCreateAddress"
+        android:layout_below="@id/tvCoordinates"/>
+
+    <TextView
+        android:id="@+id/tvCreateType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/etCreateType"
+        android:layout_marginBottom="4dp"
+        android:text="Type: " />
+
+    <EditText
+        android:id="@+id/etCreateType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCreateAddress"
+        android:layout_toRightOf="@id/tvCreateType" />
+
+    <TextView
+        android:id="@+id/tvCreateDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/etCreateDescription"
+        android:text="Description: " />
+
+    <EditText
+        android:id="@+id/etCreateDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCreateType"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/tvCreateDescription"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:minLines="5" />
+
+    <TextView
+        android:id="@+id/tvCreateImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etCreateDescription"
+        android:layout_marginTop="30dp"
+        android:text="Image: " />
+
+    <Button
+        android:id="@+id/btnAttachImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etCreateDescription"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/crayolas_gold"
+        android:layout_toEndOf="@+id/tvCreateImage"
+        android:text="Attach Image" />
+
+    <Button
+        android:id="@+id/btnTakePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etCreateDescription"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/crayolas_gold"
+        android:layout_toEndOf="@+id/btnAttachImage"
+        android:text="Take Picture" />
+
+    <ImageView
+        android:id="@+id/ivCreateImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/btnAttachImage"
+        android:layout_alignStart="@+id/btnAttachImage"
+        android:layout_alignEnd="@+id/btnTakePicture"
+        android:layout_marginTop="20dp"
+        tools:src="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/btnCreateAddRisk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivCreateImage"
+        android:layout_marginTop="21dp"
+        android:backgroundTint="@color/crayolas_gold"
+        android:text="Add Risk" />
+
+
+</RelativeLayout>

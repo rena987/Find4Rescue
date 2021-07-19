@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="grullo">#A8A676</color>
+    <color name="cosmic_latte">#FFFEE9</color>
+    <color name="crayolas_gold">#ECB984</color>
+    <color name="raw_sienna">#D58258</color>
+    <color name="chestnut">#963A2F</color>
+
 </resources>

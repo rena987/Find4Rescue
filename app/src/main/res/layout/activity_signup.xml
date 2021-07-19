@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    tools:context=".activities.SignupActivity">
+
+    <ImageView
+        android:id="@+id/ivSignupLogo"
+        android:layout_width="match_parent"
+        android:layout_height="155dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/signup_logo" />
+
+    <TextView
+        android:id="@+id/tvSignupTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"
+        android:gravity="center"
+        android:text="Create an account"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_below="@id/ivSignupLogo"
+        android:textColor="@color/crayolas_gold"/>
+
+    <EditText
+        android:id="@+id/etSignupUsername"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvSignupTitle"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:hint="Username"/>
+
+    <EditText
+        android:id="@+id/etSignupPassword"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="25dp"
+        android:inputType="textPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etSignupUsername"
+        android:ems="10"
+        android:hint="Password"/>
+
+    <Switch
+        android:id="@+id/swRescuerOrNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="43dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/etSignupPassword"
+        android:text="Rescuer?   "
+        android:textSize="19sp"
+        android:textColor="#A0A0A0"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <Button
+        android:id="@+id/btnSignSignup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/swRescuerOrNo"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="120dp"
+        android:layout_marginLeft="120dp"
+        android:layout_marginTop="44dp"
+        android:text="Sign Up"
+        android:backgroundTint="@color/crayolas_gold" />
+
+
+</RelativeLayout>
