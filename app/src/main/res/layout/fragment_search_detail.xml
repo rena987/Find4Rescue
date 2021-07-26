@@ -53,8 +53,60 @@
             android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!"
             tools:srcCompat="@tools:sample/avatars"/>
 
+        <ImageButton
+            android:id="@+id/btnPlotMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/map_unfilled_button"
+            android:layout_below="@id/dtImage"
+            android:layout_margin="50dp"/>
 
+        <TextView
+            android:id="@+id/tvMapLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/btnPlotMap"
+            android:layout_alignBottom="@+id/btnPlotMap"
+            android:gravity="center"
+            android:layout_toRightOf="@id/btnPlotMap"
+            android:text="Plot on map" />
 
+        <ImageButton
+            android:id="@+id/btnDealtRisk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/heart_unfilled_button"
+            android:layout_below="@id/btnPlotMap"
+            android:layout_marginLeft="50dp"/>
+
+        <TextView
+            android:id="@+id/tvDealtLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/btnDealtRisk"
+            android:layout_alignBottom="@+id/btnDealtRisk"
+            android:gravity="center"
+            android:layout_toRightOf="@id/btnPlotMap"
+            android:text="Address the risk?" />
+
+        <ImageButton
+            android:id="@+id/btnChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/chat_unfilled_button"
+            android:layout_below="@id/btnDealtRisk"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="50dp"/>
+
+        <TextView
+            android:id="@+id/tvChatLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/btnChat"
+            android:layout_alignBottom="@+id/btnChat"
+            android:gravity="center"
+            android:layout_toRightOf="@id/btnPlotMap"
+            android:text="Comment information and help" />
 
 
     </RelativeLayout>
