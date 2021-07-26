@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        tools:context=".fragments.SearchDetailFragment">
+
+        <TextView
+            android:id="@+id/dtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:hint="Address: 111 Emerson Gardens Rd." />
+
+        <TextView
+            android:id="@+id/dtType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dtAddress"
+            android:layout_marginTop="15dp"
+            android:textSize="20dp"
+            android:hint="Type: Collapse" />
+
+        <TextView
+            android:id="@+id/dtRescuer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dtType"
+            android:layout_marginTop="15dp"
+            android:textSize="20dp"
+            android:hint="Reported by: serenabehera" />
+
+        <TextView
+            android:id="@+id/dtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dtRescuer"
+            android:layout_marginTop="15dp"
+            android:textSize="20dp"
+            android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!" />
+
+        <ImageView
+            android:id="@+id/dtImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/dtDescription"
+            android:layout_marginTop="25dp"
+            android:textSize="20dp"
+            android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!"
+            tools:srcCompat="@tools:sample/avatars"/>
+
+
+
+
+
+    </RelativeLayout>
+
+</layout>

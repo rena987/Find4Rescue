@@ -90,6 +90,12 @@ public class CreateSearchFragment extends Fragment {
         ivCreateImage = view.findViewById(R.id.ivCreateImage);
         btnCreateAddRisk = view.findViewById(R.id.btnCreateAddRisk);
 
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            Bitmap bitmap = bundle.getParcelable("bitmap");
+            ivCreateImage.setImageBitmap(bitmap);
+        }
+
         btnTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

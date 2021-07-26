@@ -1,6 +1,7 @@
 package com.example.find4rescue.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.find4rescue.R;
 import com.example.find4rescue.databinding.ItemRiskBinding;
+import com.example.find4rescue.fragments.SearchDetailFragment;
 import com.example.find4rescue.models.Risk;
 import com.parse.ParseFile;
 
@@ -27,18 +29,23 @@ import java.util.Locale;
 
 public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
 
+    public interface OnRiskClickListener {
+        void onRiskClick(int position);
+    }
 
     Context context;
     List<Risk> risks;
+    OnRiskClickListener listener;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    public RiskAdapter(Context context, List<Risk> risks) {
+    public RiskAdapter(Context context, List<Risk> risks, OnRiskClickListener listener) {
         this.context = context;
         this.risks = risks;
+        this.listener = listener;
     }
 
     @NonNull
@@ -46,7 +53,7 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d("RiskAdapter", "OnCreateViewHolder");
         View view = LayoutInflater.from(context).inflate(R.layout.item_risk, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, listener);
     }
 
     @Override
@@ -73,7 +80,7 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView tvDescription;
         TextView tvType;
@@ -81,8 +88,9 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         TextView tvAddress;
         ImageView ivDisasterImage;
         TextView tvTimestamp;
+        OnRiskClickListener onRiskClickListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnRiskClickListener listener) {
             super(itemView);
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvType = itemView.findViewById(R.id.tvType);
@@ -90,10 +98,11 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             tvAddress = itemView.findViewById(R.id.tvAddress);
             ivDisasterImage = itemView.findViewById(R.id.ivDisasterImage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+            onRiskClickListener = listener;
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Risk risk) {
-
             tvDescription.setText("Description: " + risk.getDescription());
             tvType.setText("Type: " + risk.getType());
             tvUsername.setText("Rescuer: " + risk.getRescuer().getUsername());
@@ -111,6 +120,10 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             Log.d("RiskAdapter", "date: " + getRelativeTimeAgo(date.toString()));
             tvTimestamp.setText(getRelativeTimeAgo(date.toString()));
 
+            SearchDetailFragment fragment = new SearchDetailFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("risk", risk);
+            fragment.setArguments(bundle);
         }
 
         public String getRelativeTimeAgo(String rawJsonDate) {
@@ -140,5 +153,9 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             return "";
         }
 
+        @Override
+        public void onClick(View v) {
+            onRiskClickListener.onRiskClick(getAdapterPosition());
+        }
     }
 }

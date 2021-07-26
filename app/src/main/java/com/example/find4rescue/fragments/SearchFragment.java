@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.find4rescue.R;
 import com.example.find4rescue.adapters.RiskAdapter;
@@ -63,7 +64,7 @@ public class SearchFragment extends Fragment {
 
         queryRisks();
 
-        riskAdapter = new RiskAdapter(getContext(), risks);
+        riskAdapter = new RiskAdapter(getContext(), risks, onRiskClickListener);
         rvRisks.setAdapter(riskAdapter);
         rvRisks.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -75,6 +76,17 @@ public class SearchFragment extends Fragment {
         });
 
     }
+
+    RiskAdapter.OnRiskClickListener onRiskClickListener = new RiskAdapter.OnRiskClickListener() {
+        @Override
+        public void onRiskClick(int position) {
+            SearchDetailFragment fragment = new SearchDetailFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("risk", risks.get(position));
+            fragment.setArguments(bundle);
+            getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+        }
+    };
 
     private void queryRisks() {
         ParseQuery<Risk> query = ParseQuery.getQuery(Risk.class);
@@ -98,4 +110,5 @@ public class SearchFragment extends Fragment {
             }
         });
     }
+
 }

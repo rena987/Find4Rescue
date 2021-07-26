@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.CameraFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/tvCameraTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello camera fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:text="Take Picture" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/btnNewRisk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCameraTitle"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:backgroundTint="@color/crayolas_gold"
+        android:text="New Risk"/>
+
+    <Button
+        android:id="@+id/btnComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnNewRisk"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:backgroundTint="@color/crayolas_gold"
+        android:text="Comment"/>
+
+
+</RelativeLayout>
