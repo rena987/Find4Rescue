@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -89,6 +90,7 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         ImageView ivDisasterImage;
         TextView tvTimestamp;
         OnRiskClickListener onRiskClickListener;
+        LinearLayout row_linearlayout;
 
         public ViewHolder(@NonNull View itemView, OnRiskClickListener listener) {
             super(itemView);

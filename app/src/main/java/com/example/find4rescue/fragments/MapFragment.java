@@ -27,6 +27,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.data.ShapefileFeatureTable;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
@@ -40,6 +41,7 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleRenderer;
 import com.example.find4rescue.R;
 import com.example.find4rescue.activities.MainActivity;
@@ -82,10 +84,6 @@ public class MapFragment extends Fragment {
 
         ArcGISRuntimeEnvironment.setApiKey("AAPKa9ab0f4101a64687a9607a6ae1476ac8hpV0htXjE3VxcH9PqDX2h0SK83oRgb23gZnKJvI0hpWQwFnx7aUPZ8nQ2cXr8U7f");
 
-        // create a new map to display in the map view with a streets basemap
-        mapView = view.findViewById(R.id.mapView);
-        ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_STREETS);
-        mapView.setMap(map);
 
         if (ContextCompat.checkSelfPermission(getContext(),
                 WRITE_EXTERNAL_STORAGE)
@@ -147,23 +145,73 @@ public class MapFragment extends Fragment {
 //            Log.d(TAG, "Path doesn't exist!");
 //        }
 
+        // inflate MapView from layout
+        mapView = view.findViewById(R.id.mapView);
+        // create a map with the BasemapType topographic
+        ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
+        // set the map to be displayed in this view
+        mapView.setMap(map);
 
-        Log.d(TAG, getContext().getExternalFilesDir(null) + "/Parcels.shp");
-        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/Parcels.shp");
 
+        // set an initial viewpoint
+//        Point point = new Point(-11662054, 4818336, SpatialReference.create(3857));
+//        Viewpoint viewpoint = new Viewpoint(point, 200000);
+//        mapView.setViewpoint(viewpoint);
+
+//        // create a shapefile feature table from the local data
+//        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(
+//                getContext().getExternalFilesDir(null) + "/Parcels.shp");
+//
+//        // use the shapefile feature table to create a feature layer
+//        FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
+//
+//        // create the Symbol
+//        SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
+//        SimpleFillSymbol fillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.YELLOW, lineSymbol);
+//
+//        // create the Renderer
+//        SimpleRenderer renderer = new SimpleRenderer(fillSymbol);
+//
+//        // set the Renderer on the Layer
+//        featureLayer.setRenderer(renderer);
+//
+//        // add the feature layer to the map
+//        map.getOperationalLayers().add(featureLayer);
+//
+//        shapefileFeatureTable.addDoneLoadingListener(() -> {
+//            if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
+//                // zoom the map to the extent of the shapefile
+//                Log.d("Viewpoint: ", "" + featureLayer.getFullExtent());
+//                mapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
+//            } else {
+//                String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
+//                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+//                Log.d(TAG, error);
+//                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
+//            }
+//        });
+
+
+        Log.d(TAG, getContext().getExternalFilesDir(null) + "/BeckerParcels.shp");
+
+        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/BeckerParcels.shp");
+        shapefileFeatureTable.loadAsync();
+
+        Log.d(TAG, "" + shapefileFeatureTable.getFields().get(0).getName() + " " + shapefileFeatureTable.getFields().get(1).getName() + " " + shapefileFeatureTable.getTotalFeatureCount());
         Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
 
 
-        // use the shapefile feature table to create a feature layer
-        FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
-        mapView.getMap().getOperationalLayers().add(featureLayer);
-
-
         shapefileFeatureTable.addDoneLoadingListener(() -> {
+            Log.d(TAG, "listener hello!");
             if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
                 // zoom the map to the extent of the shapefile
-                Log.d("Viewpoint: ", "" + featureLayer.getFullExtent());
+                FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
+                Log.d(TAG, "Viewpoint: " + featureLayer.getFullExtent());
                 mapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
+                Log.d(TAG, "Viewpoint zoomed in!");
+                // use the shapefile feature table to create a feature layer
+                mapView.getMap().getOperationalLayers().add(featureLayer);
+
             } else {
                 String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
                 Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();

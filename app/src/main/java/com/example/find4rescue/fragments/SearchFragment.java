@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.find4rescue.R;
@@ -36,6 +38,7 @@ public class SearchFragment extends Fragment {
     List<Risk> risks;
     RiskAdapter riskAdapter;
     FloatingActionButton fabAddRisk;
+    Switch stSort;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -61,8 +64,16 @@ public class SearchFragment extends Fragment {
         risks = new ArrayList<>();
         rvRisks = view.findViewById(R.id.rvRisks);
         fabAddRisk = view.findViewById(R.id.fabAddRisk);
+        stSort = view.findViewById(R.id.stSort);
 
-        queryRisks();
+        queryRisks(false);
+
+        stSort.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                queryRisks(isChecked);
+            }
+        });
 
         riskAdapter = new RiskAdapter(getContext(), risks, onRiskClickListener);
         rvRisks.setAdapter(riskAdapter);
@@ -88,10 +99,17 @@ public class SearchFragment extends Fragment {
         }
     };
 
-    private void queryRisks() {
+    private void queryRisks(boolean isChecked) {
         ParseQuery<Risk> query = ParseQuery.getQuery(Risk.class);
         query.include(Risk.KEY_RESCUER);
         query.setLimit(20);
+
+        if (isChecked) {
+            query.orderByAscending("NumOfRescuers");
+        } else {
+            query.orderByDescending("createdAt");
+        }
+
         query.findInBackground(new FindCallback<Risk>() {
             @Override
             public void done(List<Risk> objects, ParseException e) {

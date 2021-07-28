@@ -6,8 +6,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.SearchFragment">
 
+    <LinearLayout
+        android:id="@+id/llSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSortBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:gravity="center"
+            android:text="Sort by: " />
+
+        <TextView
+            android:id="@+id/tvSortByMostRecent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@id/stSort"
+            android:text="Most Recent" />
+
+        <Switch
+            android:id="@+id/stSort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:switchMinWidth="70dp"/>
+
+
+        <TextView
+            android:id="@+id/tvSortByRescuers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Rescuers needed" />
+
+    </LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRisks"
+        android:layout_below="@id/llSort"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

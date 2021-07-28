@@ -53,59 +53,70 @@
             android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!"
             tools:srcCompat="@tools:sample/avatars"/>
 
-        <ImageButton
-            android:id="@+id/btnPlotMap"
+        <TextView
+            android:id="@+id/dtNumOfRescuers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dtImage"
+            android:layout_marginTop="25dp"
+            android:hint="Existing Rescuers: 5"/>
+
+        <ImageView
+            android:id="@+id/ivPlotMap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/map_unfilled_button"
-            android:layout_below="@id/dtImage"
-            android:layout_margin="50dp"/>
+            android:background="@null"
+            android:layout_below="@id/dtNumOfRescuers"
+            android:layout_margin="25dp"/>
 
         <TextView
             android:id="@+id/tvMapLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/btnPlotMap"
-            android:layout_alignBottom="@+id/btnPlotMap"
+            android:layout_alignTop="@+id/ivPlotMap"
+            android:layout_alignBottom="@+id/ivPlotMap"
             android:gravity="center"
-            android:layout_toRightOf="@id/btnPlotMap"
+            android:layout_toRightOf="@id/ivPlotMap"
             android:text="Plot on map" />
 
-        <ImageButton
-            android:id="@+id/btnDealtRisk"
+        <ImageView
+            android:id="@+id/ivDealtRisk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:src="@drawable/heart_unfilled_button"
-            android:layout_below="@id/btnPlotMap"
-            android:layout_marginLeft="50dp"/>
+            android:layout_below="@id/ivPlotMap"
+            android:layout_marginLeft="25dp"/>
 
         <TextView
             android:id="@+id/tvDealtLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/btnDealtRisk"
-            android:layout_alignBottom="@+id/btnDealtRisk"
+            android:layout_alignTop="@+id/ivDealtRisk"
+            android:layout_alignBottom="@+id/ivDealtRisk"
             android:gravity="center"
-            android:layout_toRightOf="@id/btnPlotMap"
+            android:layout_toRightOf="@id/ivPlotMap"
             android:text="Address the risk?" />
 
-        <ImageButton
-            android:id="@+id/btnChat"
+        <ImageView
+            android:id="@+id/ivChat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/chat_unfilled_button"
-            android:layout_below="@id/btnDealtRisk"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="50dp"/>
+            android:layout_below="@id/ivDealtRisk"
+            android:background="@null"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="25dp"/>
 
         <TextView
             android:id="@+id/tvChatLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/btnChat"
-            android:layout_alignBottom="@+id/btnChat"
+            android:layout_alignTop="@+id/ivChat"
+            android:layout_alignBottom="@+id/ivChat"
             android:gravity="center"
-            android:layout_toRightOf="@id/btnPlotMap"
+            android:layout_toRightOf="@id/ivPlotMap"
             android:text="Comment information and help" />
 
 

@@ -1,5 +1,7 @@
 package com.example.find4rescue.models;
 
+import android.util.Log;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -16,6 +18,8 @@ public class Risk extends ParseObject {
     public static final String KEY_IMAGE = "Image";
     public static final String KEY_RESCUER = "Rescuer";
     public static final String KEY_COORDINATES = "Coordinates";
+    public static final String KEY_DEALTORNOT = "DealtOrNot";
+    public static final String KEY_NUMOFRESCUERS = "NumOfRescuers";
 
     public Risk() { }
 
@@ -52,5 +56,13 @@ public class Risk extends ParseObject {
     public String getCoordinates() { return getString(KEY_COORDINATES); }
 
     public void setCoordinates(String coordinates) { put(KEY_COORDINATES, coordinates); }
+
+    public boolean getDealtOrNot() { return getBoolean(KEY_DEALTORNOT); }
+
+    public void setDealtOrNot(boolean dealtOrNot) { put(KEY_DEALTORNOT, dealtOrNot); }
+
+    public int getNumOfRescuers() { return getInt(KEY_NUMOFRESCUERS); }
+
+    public void setNumOfRescuers(int numOfRescuers) { put(KEY_NUMOFRESCUERS, numOfRescuers); }
 
 }
