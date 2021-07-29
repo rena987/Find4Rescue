@@ -49,6 +49,7 @@ The following **stretch** features are implemented:
 * [ ] Rescuer can find the distance between themselves and the risk they are dealing with on arcGIS map 
 * [ ] Rescuer can search for a "risk" based on type
 * [ ] Rescuer can view more people at risk as they scroll with infinite pagination
+* [ ] "Person in need" has there own login where they can chat with rescuers 
 * [ ] Replace all icon drawables and other static image assets with vector drawables
 * [ ] Use the View Binding library to reduce view boilerplate.
 * [ ] Use 2-3 more counties as data for the arcGIS map 
