@@ -9,45 +9,74 @@
 
 The following **required** functionality is completed:
 
-* [ ]	Rescuer can **sign in** using OAuth login
-* [ ]	Rescuer can **view people in need of help** in the search screen
-  * [ ] Rescuer can see username, details on risk, urgency rating and associated pictures. (stored on Parse Database) 
-  * [ ] Rescuer is displayed the [relative timestamp](https://gist.github.com/nesquena/f786232f5ef72f6e10a7) for each risk "8m", "7h"
-  * [ ] Rescuer can "like" a person in need on the search screen to indicate to other rescuers that they are dealing with it
-  * [ ] Rescuer can search for a "risk" based on type
-  * [ ] Rescuer can filter out people in need based on most recent and type
-  * [ ] Rescuer can **pull down to refresh search screen**
-  * [ ] Rescuer can create a new "risk" on search screen 
-  * [ ] Rescuer can view and create comments on each "risk" screen 
-  * [ ] Rescuer can take or upload picture to add to risk screen 
-* [ ] Rescuer can **view arcGIS map** on map screen
-  * [ ] Rescuer can view locations of all the other rescuers 
-  * [ ] Rescuer can view parcel polygon lines of the county they are in (important in connecting with other rescuers!) 
-  * [ ] Rescuer can view highlighted parcel polygons they have selected to help 
+* [x]	Rescuer can **sign in** to his or her account
+* [x]	Rescuer can **sign out** to his or her account
+* [x]	Rescuer can **log out** from his or her account
+* [x]	Rescuer can **view people in need of help** in the Search View
+  * [x] Rescuer can see details of risk (stored on Parse Database) within the main Search View such as: 
+    * [x] Primary Rescuer who reported the risk
+    * [x] Address of the Risk
+    * [x] Type of Risk
+    * [x] Description of the Risk
+    * [x] The [relative timestamp](https://gist.github.com/nesquena/f786232f5ef72f6e10a7) when each risk was reported (eg. "8m", "7h")
+   * [x] Rescuer can create a new "risk" on search screen through given: 
+     * [x] Coordinates
+     * [x] Address
+     * [x] Type
+     * [x] Description
+     * [ ] Image
+       * [ ] Rescuer can attach an image from their drive 
+       * [x] Rescuer can take picture from their device
+   * [x] Rescuer can filter out risks based on most recent and rescuers needed
+   * [ ] Rescuer can **pull down to refresh search screen**
+* [ ] Rescuer can **view a detailed view** of each risk in the Search View 
+  * [ ] Rescuer can access the detailed view by:
+    * [x] Tap on individual risk from the search view 
+    * [ ] Open up search detail view using an animation 
+  * [x] Rescuer can view all the details they saw on the search screen plus the number of existing rescuers addressing the risk
+  * [x] Rescuer can "like" or press the heart button to indicate to other rescuers that they are also addressing the risk by incrementing the number of existing rescuers displayed 
+  * [x] Rescuer can comment and view other rescuers comments on the risk by pressing the "message" button
+  * [ ] Rescuer can **view arcGIS map** by pressing the "map" button 
+    * [x] Rescuer can view parcel polygon lines of the county they are in (Becker County)
+    * [ ] Rescuer can view highlighted parcel polygons they have selected to help 
+* [ ] Rescuer can press on camera button in the bottom navigation view to take picture in order to:
+  * [x] Make new risk
+  * [ ] Make new comment
 
 The following **stretch** features are implemented:
 
-* [ ]  "Person in need" can **sign in** using OAuth login
-  * [ ] "Person in need" has access to more user-friendly **Google Maps SDK** instead of arcGIS map to show location of rescuer compared to their current location
-  * [ ] "Person in need" does not have access to search screen but includes chat application and camera feature 
-  * [ ] "Person in need" can **create new risk screen** which the Rescuer will see on their search screen
-* [ ] User sees an **indeterminate progress indicator** when any background or network task is happening
-* [ ] User can tap a risk in search screen to **open a detailed view**
-* [ ] User can view more people at risk as they scroll with infinite pagination
+* [ ] Rescuer sees an **indeterminate progress indicator** when any background or network task is happening
+* [ ] Rescuer can find the distance between themselves and the risk they are dealing with on arcGIS map 
+* [ ] Rescuer can search for a "risk" based on type
+* [ ] Rescuer can view more people at risk as they scroll with infinite pagination
 * [ ] Replace all icon drawables and other static image assets with vector drawables
 * [ ] Use the View Binding library to reduce view boilerplate.
+* [ ] Use 2-3 more counties as data for the arcGIS map 
 
 
-## Schema
+# Schema
 
+## Risk
 |    Property    | Type |  Description  |  
 | -------------- | ---- | ------------- |
 | objectId  | String  | unique id for "risk screen" (default field) |
 | createdAt  | DateTime  | date when "risk screen" is created (default field) |
 | updatedAt  | DateTime  | date when "risk screen" is last updated (default field) |
-| author  | Pointer to User  | author of "risk screen" |
-| image  | File  | image that author associated with risk |
-| description  | String  | description of "risk" |
-| dealtOrNo | Boolean | whether or not the "risk screen" is being dealt with already |
+| Address  | String  | address of where the risk is ocurring |
+| Type | String | type of risk |
+| Rescuer  | Pointer to User  | author of "risk screen" |
+| Image  | File  | image that rescuer attached to risk |
+| Description  | String  | description of "risk" |
+| DealtOrNot | Boolean | whether or not the "risk screen" is being dealt with already |
+| NumOfRescuers | Number | number of rescuers dealing with the risk | 
 
+## Comments
+|    Property    | Type |  Description  |  
+| -------------- | ---- | ------------- |
+| objectId  | String  | unique id for "risk screen" (default field) |
+| createdAt  | DateTime  | date when "risk screen" is created (default field) |
+| updatedAt  | DateTime  | date when "risk screen" is last updated (default field) |
+| CommentedRisk  | Pointer to Risk  | Risk on which is being commented on |
+| Usernames | Array | Array of strings of the usernames within the comments |
+| Messages  | Array  | Array of strings of the messages corresponding to the usernames |
 
