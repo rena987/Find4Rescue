@@ -72,6 +72,17 @@ public class SearchDetailFragment extends Fragment {
             binding.ivDealtRisk.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled_button));
         }
 
+        binding.ivPlotMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MapFragment fragment = new MapFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("coordinates", risk.getCoordinates());
+                fragment.setArguments(bundle);
+                getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+            }
+        });
+
         binding.ivDealtRisk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

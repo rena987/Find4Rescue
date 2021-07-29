@@ -2,6 +2,7 @@ package com.example.find4rescue;
 
 import android.app.Application;
 
+import com.example.find4rescue.models.Comments;
 import com.example.find4rescue.models.Risk;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -13,6 +14,7 @@ public class ParseApplication extends Application {
         super.onCreate();
 
         ParseObject.registerSubclass(Risk.class);
+        ParseObject.registerSubclass(Comments.class);
 
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("uRtqd8cWyeLBVGXaOJm7BrFPQj6WAEBrwg4iFZSS")

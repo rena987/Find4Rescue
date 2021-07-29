@@ -145,51 +145,19 @@ public class MapFragment extends Fragment {
 //            Log.d(TAG, "Path doesn't exist!");
 //        }
 
+        if (getArguments().get("coordinates") != null) {
+            String coordinates = getArguments().getString("coordinates");
+            double latitude = Double.parseDouble(coordinates.split(",")[0]);
+            double longitude = Double.parseDouble(coordinates.split(",")[1]);
+            Log.d(TAG, "Coordinates: " + latitude + ", " + longitude);
+        }
+
         // inflate MapView from layout
         mapView = view.findViewById(R.id.mapView);
         // create a map with the BasemapType topographic
         ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
         // set the map to be displayed in this view
         mapView.setMap(map);
-
-
-        // set an initial viewpoint
-//        Point point = new Point(-11662054, 4818336, SpatialReference.create(3857));
-//        Viewpoint viewpoint = new Viewpoint(point, 200000);
-//        mapView.setViewpoint(viewpoint);
-
-//        // create a shapefile feature table from the local data
-//        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(
-//                getContext().getExternalFilesDir(null) + "/Parcels.shp");
-//
-//        // use the shapefile feature table to create a feature layer
-//        FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
-//
-//        // create the Symbol
-//        SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
-//        SimpleFillSymbol fillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.YELLOW, lineSymbol);
-//
-//        // create the Renderer
-//        SimpleRenderer renderer = new SimpleRenderer(fillSymbol);
-//
-//        // set the Renderer on the Layer
-//        featureLayer.setRenderer(renderer);
-//
-//        // add the feature layer to the map
-//        map.getOperationalLayers().add(featureLayer);
-//
-//        shapefileFeatureTable.addDoneLoadingListener(() -> {
-//            if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
-//                // zoom the map to the extent of the shapefile
-//                Log.d("Viewpoint: ", "" + featureLayer.getFullExtent());
-//                mapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
-//            } else {
-//                String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
-//                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
-//                Log.d(TAG, error);
-//                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
-//            }
-//        });
 
 
         Log.d(TAG, getContext().getExternalFilesDir(null) + "/BeckerParcels.shp");
@@ -207,6 +175,15 @@ public class MapFragment extends Fragment {
                 // zoom the map to the extent of the shapefile
                 FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
                 Log.d(TAG, "Viewpoint: " + featureLayer.getFullExtent());
+                // create the Symbol
+                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
+                SimpleFillSymbol fillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, 0, lineSymbol);
+
+                // create the Renderer
+                SimpleRenderer renderer = new SimpleRenderer(fillSymbol);
+
+                // set the Renderer on the Layer
+                featureLayer.setRenderer(renderer);
                 mapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
                 Log.d(TAG, "Viewpoint zoomed in!");
                 // use the shapefile feature table to create a feature layer

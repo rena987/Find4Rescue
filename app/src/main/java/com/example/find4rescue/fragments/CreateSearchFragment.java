@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.find4rescue.R;
+import com.example.find4rescue.models.Comments;
 import com.example.find4rescue.models.Risk;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.ParseException;
@@ -145,9 +146,21 @@ public class CreateSearchFragment extends Fragment {
                 }
                 Log.d(TAG, "Risk was saved successfully!");
                 clearTextualFields();
-                getFragmentManager().beginTransaction().replace(R.id.flContainer, new SearchFragment()).commit();
             }
         });
+
+        Comments comment = new Comments();
+        comment.setRisk(risk);
+        comment.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error while saving: " + e);
+                }
+            }
+        });
+
+        getFragmentManager().beginTransaction().replace(R.id.flContainer, new SearchFragment()).commit();
     }
 
     private void clearTextualFields() {
