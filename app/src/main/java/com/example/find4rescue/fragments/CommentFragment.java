@@ -6,10 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -17,7 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.find4rescue.R;
-import com.example.find4rescue.models.Comments;
+import com.example.find4rescue.adapters.CommentsAdapter;
 import com.example.find4rescue.models.Risk;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -27,7 +29,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,9 +39,14 @@ import java.util.List;
  */
 public class CommentFragment extends Fragment {
 
+    public static final String TAG = "CommentFragment";
     EditText etMessage;
     AppCompatImageButton ibSend;
     RecyclerView rvComments;
+    ParseQuery<ParseObject> query;
+    List<String> usernames;
+    List<String> messages;
+    CommentsAdapter adapter;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -65,7 +74,32 @@ public class CommentFragment extends Fragment {
         etMessage = view.findViewById(R.id.etMessage);
         ibSend = view.findViewById(R.id.ibSend);
         rvComments = view.findViewById(R.id.rvComments);
+        usernames = new ArrayList<>();
+        messages = new ArrayList<>();
+
         Risk risk = getArguments().getParcelable("risk");
+        query = ParseQuery.getQuery("Comments");
+        query.whereEqualTo("CommentedRisk", risk);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                JSONArray usernames_arr_ = object.getJSONArray("Usernames");
+                JSONArray messages_arr_ = object.getJSONArray("Messages");
+                for (int i = 0; i < usernames_arr_.length(); i++) {
+                    try {
+                        usernames.add(usernames_arr_.getString(i));
+                        messages.add(messages_arr_.getString(i));
+                        adapter = new CommentsAdapter(getContext(), usernames, messages);
+                        rvComments.setAdapter(adapter);
+                        rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
+                        refreshComments();
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+            }
+        });
+
 
         ibSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +107,6 @@ public class CommentFragment extends Fragment {
                 String message = etMessage.getText().toString();
                 String username = ParseUser.getCurrentUser().getUsername();
 
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("Comments");
-                query.whereEqualTo("CommentedRisk", risk);
                 query.getFirstInBackground(new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject object, ParseException e) {
@@ -88,6 +120,7 @@ public class CommentFragment extends Fragment {
                             object.put("Messages", messages);
 
                             object.saveInBackground();
+                            refreshComments();
 
                             etMessage.setText("");
                         } else {
@@ -99,4 +132,28 @@ public class CommentFragment extends Fragment {
             }
         });
     }
+
+    private void refreshComments() {
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                messages.clear();
+                usernames.clear();
+
+                JSONArray usernames_arr_ = object.getJSONArray("Usernames");
+                JSONArray messages_arr_ = object.getJSONArray("Messages");
+                for (int i = 0; i < usernames_arr_.length(); i++) {
+                    try {
+                        usernames.add(usernames_arr_.getString(i));
+                        messages.add(messages_arr_.getString(i));
+                        Log.d(TAG, "Refreshing: " + messages);
+                        adapter.notifyDataSetChanged();
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.find4rescue.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,21 +12,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.find4rescue.R;
-import com.example.find4rescue.models.Comments;
+import com.parse.Parse;
 import com.parse.ParseUser;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.w3c.dom.Comment;
+import java.util.List;
 
-public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MessageViewHolder>{
+public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.MessageViewHolder> {
 
     private static final int MESSAGE_OUTGOING = 123;
     private static final int MESSAGE_INCOMING = 321;
-
+    private List<String> usernames;
+    private List<String> messages;
     private Context context;
-    private JSONArray comments;
-    private JSONArray usernames;
+
+    public CommentsAdapter(Context context, List<String> usernames, List<String> messages) {
+        Log.d("CommentsAdapter", "Usernames Array: " + usernames);
+        Log.d("CommentsAdapter", "Messages Array: " + messages);
+        this.context = context;
+        this.usernames = usernames;
+        this.messages = messages;
+    }
 
     @NonNull
     @Override
@@ -46,42 +52,28 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Messag
 
     @Override
     public void onBindViewHolder(@NonNull CommentsAdapter.MessageViewHolder holder, int position) {
-        try {
-            String comment = comments.get(position).toString();
-            String username = usernames.get(position).toString();
-            holder.bindMessage(username, comment);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        String message = messages.get(position);
+        String username = usernames.get(position);
+        holder.bindMessage(username, message);
     }
 
     @Override
     public int getItemCount() {
-        return comments.length();
+        return messages.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        try {
-            if (isMe(position)) {
-                return MESSAGE_OUTGOING;
-            } else {
-                return MESSAGE_INCOMING;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (isMe(position)) {
+            return MESSAGE_OUTGOING;
+        } else {
+            return MESSAGE_INCOMING;
         }
-        return MESSAGE_OUTGOING;
     }
 
-    private boolean isMe(int position) throws JSONException {
-        String username = usernames.get(position).toString();
-        if (username == ParseUser.getCurrentUser().getUsername()) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean isMe(int position) {
+        String username = usernames.get(position);
+        return username.equals(ParseUser.getCurrentUser().getUsername());
     }
 
     public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -90,7 +82,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Messag
             super(itemView);
         }
 
-        abstract void bindMessage(String username, String comment);
+        abstract void bindMessage(String username, String message);
     }
 
     public class IncomingMessageViewHolder extends MessageViewHolder {
@@ -104,8 +96,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Messag
         }
 
         @Override
-        void bindMessage(String username, String comment) {
-            body.setText(comment);
+        void bindMessage(String username, String message) {
+            body.setText(message);
             name.setText(username);
         }
 
@@ -120,11 +112,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Messag
         }
 
         @Override
-        void bindMessage(String username, String comment) {
-            body.setText(comment);
+        void bindMessage(String username, String message) {
+            body.setText(message);
         }
-
-
     }
 
 }
