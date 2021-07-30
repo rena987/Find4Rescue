@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.data.ShapefileFeatureTable;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
@@ -38,6 +39,8 @@ import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
@@ -147,12 +150,6 @@ public class MapFragment extends Fragment {
 //            Log.d(TAG, "Path doesn't exist!");
 //        }
 
-        if (getArguments().get("coordinates") != null) {
-            String coordinates = getArguments().getString("coordinates");
-            double latitude = Double.parseDouble(coordinates.split(",")[0]);
-            double longitude = Double.parseDouble(coordinates.split(",")[1]);
-            Log.d(TAG, "Coordinates: " + latitude + ", " + longitude);
-        }
 
         // inflate MapView from layout
         mapView = view.findViewById(R.id.mapView);
@@ -199,7 +196,17 @@ public class MapFragment extends Fragment {
             }
         });
 
+        if (getArguments() != null) {
+            if (getArguments().get("coordinates") != null) {
+                String coordinates = getArguments().getString("coordinates");
+                double latitude = Double.parseDouble(coordinates.split(",")[0]);
+                double longitude = Double.parseDouble(coordinates.split(",")[1]);
+                Log.d(TAG, "Coordinates: " + latitude + ", " + longitude);
+            }
+        }
+
     }
+
 
     @Override
     public void onPause() {

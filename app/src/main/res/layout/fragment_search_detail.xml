@@ -13,7 +13,7 @@
             android:id="@+id/dtAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:hint="Address: 111 Emerson Gardens Rd." />
 
         <TextView
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dtAddress"
             android:layout_marginTop="15dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:hint="Type: Collapse" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dtType"
             android:layout_marginTop="15dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:hint="Reported by: serenabehera" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dtRescuer"
             android:layout_marginTop="15dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!" />
 
         <ImageView
@@ -68,7 +68,7 @@
             android:src="@drawable/map_unfilled_button"
             android:background="@null"
             android:layout_below="@id/dtNumOfRescuers"
-            android:layout_margin="25dp"/>
+            android:layout_margin="15dp"/>
 
         <TextView
             android:id="@+id/tvMapLabel"
@@ -87,7 +87,7 @@
             android:background="@null"
             android:src="@drawable/heart_unfilled_button"
             android:layout_below="@id/ivPlotMap"
-            android:layout_marginLeft="25dp"/>
+            android:layout_marginLeft="15dp"/>
 
         <TextView
             android:id="@+id/tvDealtLabel"
@@ -106,8 +106,8 @@
             android:src="@drawable/chat_unfilled_button"
             android:layout_below="@id/ivDealtRisk"
             android:background="@null"
-            android:layout_marginTop="25dp"
-            android:layout_marginLeft="25dp"/>
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"/>
 
         <TextView
             android:id="@+id/tvChatLabel"
