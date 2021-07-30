@@ -77,7 +77,7 @@ public class SearchDetailFragment extends Fragment {
             public void onClick(View v) {
                 MapFragment fragment = new MapFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("coordinates", risk.getCoordinates());
+                bundle.putString("address", risk.getAddress());
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
             }

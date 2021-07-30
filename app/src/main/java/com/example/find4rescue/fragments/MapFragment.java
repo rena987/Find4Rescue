@@ -26,11 +26,16 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.data.ShapefileFeatureTable;
 import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
@@ -159,9 +164,10 @@ public class MapFragment extends Fragment {
         mapView.setMap(map);
 
 
-        Log.d(TAG, getContext().getExternalFilesDir(null) + "/BeckerParcels.shp");
+        String filepath = getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp";
+        Log.d(TAG, getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
 
-        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/BeckerParcels.shp");
+        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
         shapefileFeatureTable.loadAsync();
 
         Log.d(TAG, "" + shapefileFeatureTable.getFields().get(0).getName() + " " + shapefileFeatureTable.getFields().get(1).getName() + " " + shapefileFeatureTable.getTotalFeatureCount());
@@ -187,6 +193,13 @@ public class MapFragment extends Fragment {
                 Log.d(TAG, "Viewpoint zoomed in!");
                 // use the shapefile feature table to create a feature layer
                 mapView.getMap().getOperationalLayers().add(featureLayer);
+                Log.d(TAG, "ShapefileFeatureTable: " + shapefileFeatureTable.getField("LONGITUDE").getFieldType());
+                SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
+                GraphicsOverlay overlay = new GraphicsOverlay();
+                mapView.getGraphicsOverlays().add(overlay);
+                overlay.getGraphics().add(new Graphic(createPoint(), markerSymbol));
+                //mapView.setViewpointGeometryAsync(createEnvelope(), getResources().getDimension(R.dimen.viewpoint_padding));
+
 
             } else {
                 String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
@@ -196,16 +209,37 @@ public class MapFragment extends Fragment {
             }
         });
 
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(getContext()));
+        }
+        Python py = Python.getInstance();
+        final PyObject pyobj = py.getModule("ShapefileParser");
+
         if (getArguments() != null) {
-            if (getArguments().get("coordinates") != null) {
-                String coordinates = getArguments().getString("coordinates");
-                double latitude = Double.parseDouble(coordinates.split(",")[0]);
-                double longitude = Double.parseDouble(coordinates.split(",")[1]);
-                Log.d(TAG, "Coordinates: " + latitude + ", " + longitude);
+            if (getArguments().get("address") != null) {
+                String address = getArguments().getString("address");
+                Log.d(TAG, "Address: " + address);
+                PyObject obj = pyobj.callAttr("findAddress", filepath, address);
+                Log.d(TAG, "Successfull run: " + obj.toString() + " " + address);
             }
         }
 
     }
+
+    private Envelope createEnvelope() {
+        Envelope envelope = new Envelope(692477.7350706644, 326871.9862984028, 692542.7400737517, 326937.90910153463, SpatialReferences.getWgs84());
+        return envelope;
+    }
+
+    private Point createPoint() {
+        //[DocRef: Name=Create Point, Category=Fundamentals, Topic=Geometries]
+        // create a Point using x,y coordinates and a SpatialReference
+        Point pt = new Point(-87.87, 43.3953, SpatialReferences.getWgs84());
+        //[DocRef: END]
+
+        return pt;
+    }
+
 
 
     @Override
