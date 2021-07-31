@@ -1,7 +1,7 @@
 
 
 def findAddress(filepath, address):
-  data = gpd.read_file(filepath)
+  data = filepath
 
   data_2 = data["PSTLADRESS"]
   wanted_index = -1;
