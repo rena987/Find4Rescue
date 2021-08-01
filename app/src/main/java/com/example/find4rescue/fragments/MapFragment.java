@@ -36,6 +36,8 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
+import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
@@ -62,6 +64,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -165,6 +168,7 @@ public class MapFragment extends Fragment {
 
 
         String filepath = getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp";
+        Log.d(TAG, filepath);
         Log.d(TAG, getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
 
         ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
@@ -181,11 +185,11 @@ public class MapFragment extends Fragment {
                 FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
                 Log.d(TAG, "Viewpoint: " + featureLayer.getFullExtent());
                 // create the Symbol
-                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
-                SimpleFillSymbol fillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, 0, lineSymbol);
+                SimpleLineSymbol pointLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
+                SimpleFillSymbol pointFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, 0, pointLineSymbol);
 
                 // create the Renderer
-                SimpleRenderer renderer = new SimpleRenderer(fillSymbol);
+                SimpleRenderer renderer = new SimpleRenderer(pointFillSymbol);
 
                 // set the Renderer on the Layer
                 featureLayer.setRenderer(renderer);
@@ -193,13 +197,16 @@ public class MapFragment extends Fragment {
                 Log.d(TAG, "Viewpoint zoomed in!");
                 // use the shapefile feature table to create a feature layer
                 mapView.getMap().getOperationalLayers().add(featureLayer);
-                Log.d(TAG, "ShapefileFeatureTable: " + shapefileFeatureTable.getField("LONGITUDE").getFieldType());
-                SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
+                Log.d(TAG, "ShapefileFeatureTable: " + shapefileFeatureTable.getField(shapefileFeatureTable.getFields().get(0).getName()).toJson());
+                SimpleMarkerSymbol polyMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
+                SimpleFillSymbol polyFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.CROSS, Color.BLUE, null);
+                SimpleLineSymbol polyLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 3);
                 GraphicsOverlay overlay = new GraphicsOverlay();
                 mapView.getGraphicsOverlays().add(overlay);
-                overlay.getGraphics().add(new Graphic(createPoint(), markerSymbol));
-                //mapView.setViewpointGeometryAsync(createEnvelope(), getResources().getDimension(R.dimen.viewpoint_padding));
-
+                overlay.getGraphics().add(new Graphic(createPoint(), polyMarkerSymbol));
+                overlay.getGraphics().add(new Graphic(createPolyline(), polyLineSymbol));
+                overlay.getGraphics().add(new Graphic(createPolygon(), polyFillSymbol));
+                //mapView.setViewpointAsync(new Viewpoint(createPoint(), 5000));
 
             } else {
                 String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
@@ -209,26 +216,57 @@ public class MapFragment extends Fragment {
             }
         });
 
-        if (!Python.isStarted()) {
-            Python.start(new AndroidPlatform(getContext()));
+        /*if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(requireContext()));
         }
         Python py = Python.getInstance();
         final PyObject pyobj = py.getModule("ShapefileParser");
 
         if (getArguments() != null) {
             if (getArguments().get("address") != null) {
+                String python_filepath_ = "/Users/serenabehera/Downloads/WisconsinParcels/V700_Wisconsin_Parcels_OZAUKEE.shp";
                 String address = getArguments().getString("address");
                 Log.d(TAG, "Address: " + address);
-                PyObject obj = pyobj.callAttr("findAddress", filepath, address);
-                Log.d(TAG, "Successfull run: " + obj.toString() + " " + address);
+                PyObject obj = pyobj.callAttr("findAddress", python_filepath_, address);
+                Log.d(TAG, "Successful run: " + obj.toString() + " " + address);
             }
-        }
+        }*/
 
     }
 
     private Envelope createEnvelope() {
-        Envelope envelope = new Envelope(692477.7350706644, 326871.9862984028, 692542.7400737517, 326937.90910153463, SpatialReferences.getWgs84());
+        Envelope envelope = new Envelope(-90,  48,  -85,  40, SpatialReferences.getWgs84());
         return envelope;
+    }
+
+    private Polyline createPolyline() {
+        //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
+        // create a Polygon from a PointCollection
+        PointCollection wisconsinCorners = new PointCollection(SpatialReferences.getWgs84());
+        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
+        wisconsinCorners.add(  -87.8700275403258, 43.42156486770631);
+        wisconsinCorners.add(-87.8709584886817, 43.421582211127685);
+        wisconsinCorners.add( -87.8709922306129, 43.42061971238451);
+        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
+        Polyline polygon = new Polyline(wisconsinCorners);
+        //[DocRef: END]
+
+        return polygon;
+    }
+
+    private Polygon createPolygon() {
+        //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
+        // create a Polygon from a PointCollection
+        PointCollection wisconsinCorners = new PointCollection(SpatialReferences.getWgs84());
+        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
+        wisconsinCorners.add(  -87.8700275403258, 43.42156486770631);
+        wisconsinCorners.add(-87.8709584886817, 43.421582211127685);
+        wisconsinCorners.add( -87.8709922306129, 43.42061971238451);
+        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
+        Polygon polygon = new Polygon(wisconsinCorners);
+        //[DocRef: END]
+
+        return polygon;
     }
 
     private Point createPoint() {
@@ -239,7 +277,6 @@ public class MapFragment extends Fragment {
 
         return pt;
     }
-
 
 
     @Override
