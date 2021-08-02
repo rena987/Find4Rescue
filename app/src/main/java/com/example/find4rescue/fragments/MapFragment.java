@@ -167,11 +167,11 @@ public class MapFragment extends Fragment {
         mapView.setMap(map);
 
 
-        String filepath = getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp";
+        String filepath = getContext().getExternalFilesDir(null) + "/parview.shp";
         Log.d(TAG, filepath);
-        Log.d(TAG, getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
+        Log.d(TAG, getContext().getExternalFilesDir(null) + "/parview.shp");
 
-        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/V700_Wisconsin_Parcels_OZAUKEE.shp");
+        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
         shapefileFeatureTable.loadAsync();
 
         Log.d(TAG, "" + shapefileFeatureTable.getFields().get(0).getName() + " " + shapefileFeatureTable.getFields().get(1).getName() + " " + shapefileFeatureTable.getTotalFeatureCount());
@@ -242,13 +242,13 @@ public class MapFragment extends Fragment {
     private Polyline createPolyline() {
         //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
         // create a Polygon from a PointCollection
-        PointCollection wisconsinCorners = new PointCollection(SpatialReferences.getWgs84());
-        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
-        wisconsinCorners.add(  -87.8700275403258, 43.42156486770631);
-        wisconsinCorners.add(-87.8709584886817, 43.421582211127685);
-        wisconsinCorners.add( -87.8709922306129, 43.42061971238451);
-        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
-        Polyline polygon = new Polyline(wisconsinCorners);
+        PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
+        ncCorners.add(-79.05919625577653, 35.95820156281519);
+        ncCorners.add(  -79.0591964131863,  35.95841694246866);
+        ncCorners.add(-79.05974124954122, 35.95841667543237);
+        ncCorners.add( -79.05974109067762, 35.95820129577909);
+        ncCorners.add(-79.05919625577653, 35.95820156281519);
+        Polyline polygon = new Polyline(ncCorners);
         //[DocRef: END]
 
         return polygon;
@@ -257,13 +257,13 @@ public class MapFragment extends Fragment {
     private Polygon createPolygon() {
         //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
         // create a Polygon from a PointCollection
-        PointCollection wisconsinCorners = new PointCollection(SpatialReferences.getWgs84());
-        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
-        wisconsinCorners.add(  -87.8700275403258, 43.42156486770631);
-        wisconsinCorners.add(-87.8709584886817, 43.421582211127685);
-        wisconsinCorners.add( -87.8709922306129, 43.42061971238451);
-        wisconsinCorners.add(-87.87006129698385, 43.4206023695428);
-        Polygon polygon = new Polygon(wisconsinCorners);
+        PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
+        ncCorners.add(-79.05919625577653, 35.95820156281519);
+        ncCorners.add(  -79.0591964131863,  35.95841694246866);
+        ncCorners.add(-79.05974124954122, 35.95841667543237);
+        ncCorners.add( -79.05974109067762, 35.95820129577909);
+        ncCorners.add(-79.05919625577653, 35.95820156281519);
+        Polygon polygon = new Polygon(ncCorners);
         //[DocRef: END]
 
         return polygon;
@@ -272,7 +272,7 @@ public class MapFragment extends Fragment {
     private Point createPoint() {
         //[DocRef: Name=Create Point, Category=Fundamentals, Topic=Geometries]
         // create a Point using x,y coordinates and a SpatialReference
-        Point pt = new Point(-87.87, 43.3953, SpatialReferences.getWgs84());
+        Point pt = new Point( -87.8692, 43.4209, SpatialReferences.getWgs84());
         //[DocRef: END]
 
         return pt;

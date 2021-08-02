@@ -34,6 +34,14 @@ android {
             buildPython "/urs/local/bin/python3"
             buildPython "python3"
 
+            pip {
+                install "shapely"
+                install "numpy"
+                //install "fiona"
+                //install "pyproj"
+                //install "geopandas"
+            }
+
         }
 
     }

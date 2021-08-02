@@ -82,7 +82,10 @@ public class SearchFragment extends Fragment {
         fabAddRisk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().replace(R.id.flContainer, new CreateSearchFragment()).commit();
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.flContainer, new CreateSearchFragment())
+                        .commit();
             }
         });
 
