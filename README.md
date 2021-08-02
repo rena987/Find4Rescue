@@ -28,20 +28,19 @@ The following **required** functionality is completed:
        * [ ] Rescuer can attach an image from their drive 
        * [x] Rescuer can take picture from their device
    * [x] Rescuer can filter out risks based on most recent and rescuers needed
-   * [ ] Rescuer can **pull down to refresh search screen**
+   * [ ] Rescuer can double tap on a risk to address it (gesture) 
 * [ ] Rescuer can **view a detailed view** of each risk in the Search View 
   * [ ] Rescuer can access the detailed view by:
     * [x] Tap on individual risk from the search view 
-    * [ ] Open up search detail view using an animation 
+    * [ ] Open search detail view using shared element transition (Animation) 
   * [x] Rescuer can view all the details they saw on the search screen plus the number of existing rescuers addressing the risk
   * [x] Rescuer can "like" or press the heart button to indicate to other rescuers that they are also addressing the risk by incrementing the number of existing rescuers displayed 
   * [x] Rescuer can comment and view other rescuers comments on the risk by pressing the "message" button
   * [ ] Rescuer can **view arcGIS map** by pressing the "map" button 
     * [x] Rescuer can view parcel polygon lines of the county they are in (Becker County)
-    * [ ] Rescuer can view highlighted parcel polygons they have selected to help 
-* [ ] Rescuer can press on camera button in the bottom navigation view to take picture in order to:
+    * [ ] Rescuer can plot highlighted parcel polygon they have selected to help based on the risk they click on the search view
+* [x] Rescuer can press on camera button in the bottom navigation view to take picture in order to:
   * [x] Make new risk
-  * [ ] Make new comment
 
 The following **stretch** features are implemented:
 
@@ -52,6 +51,7 @@ The following **stretch** features are implemented:
 * [ ] "Person in need" has there own login where they can chat with rescuers 
 * [ ] Replace all icon drawables and other static image assets with vector drawables
 * [ ] Use the View Binding library to reduce view boilerplate.
+* [ ] Rescuer can **pull down to refresh search screen**
 * [ ] Use 2-3 more counties as data for the arcGIS map 
 
 
