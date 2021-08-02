@@ -10,16 +10,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.find4rescue.R;
 import com.example.find4rescue.databinding.FragmentSearchDetailBinding;
 import com.example.find4rescue.models.Risk;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -28,6 +33,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class SearchDetailFragment extends Fragment {
+
+    public static final String TAG = "SearchDetailFrag";
 
     FragmentSearchDetailBinding binding;
 
@@ -66,10 +73,17 @@ public class SearchDetailFragment extends Fragment {
                     .into(binding.dtImage);
         }
 
-        Log.d("SearchDetailFragment", "1 Dealt or Not: " + risk.getDealtOrNot());
+        Log.d("SearchDetailFragment", "1 Dealt or Not: " + risk.getRescuer().getBoolean("DealtOrNot"));
 
-        if (risk.getDealtOrNot()) {
-            binding.ivDealtRisk.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled_button));
+        try {
+            int index = getIndexOfUsername(ParseUser.getCurrentUser().getUsername(), risk);
+            if (index != -1) {
+                if (risk.getDealtOrNot().getBoolean(index)) {
+                    binding.ivDealtRisk.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled_button));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         binding.ivPlotMap.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +100,11 @@ public class SearchDetailFragment extends Fragment {
         binding.ivDealtRisk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DealOrUndeal(risk);
+                try {
+                    DealOrUndeal(risk);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -103,20 +121,39 @@ public class SearchDetailFragment extends Fragment {
 
     }
 
-    private void DealOrUndeal(Risk risk) {
-        Log.d("SearchDetailFragment", "2 Dealt or Not: " + risk.getDealtOrNot());
-        if (risk.getDealtOrNot()) {
-            risk.setDealtOrNot(false);
+    private void DealOrUndeal(Risk risk) throws JSONException {
+        String username = ParseUser.getCurrentUser().getUsername();
+        int index = getIndexOfUsername(username, risk);
+        if (index != -1) {
+            updateDatabase(index, risk);
+        }
+    }
+
+    private int getIndexOfUsername(String username, Risk risk) throws JSONException {
+        int index = -1;
+        for (int i = 0; i < risk.getUsernames().length(); i++) {
+            if (risk.getUsernames().getString(i).equals(username)) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    private void updateDatabase(int index, Risk risk) throws JSONException {
+        JSONArray dealtOrNots = risk.getDealtOrNot();
+        boolean setDealt = dealtOrNots.getBoolean(index);
+        dealtOrNots.remove(index);
+        dealtOrNots.put(index, !setDealt);
+        risk.setDealtOrNot(dealtOrNots);
+        if (setDealt) {
             risk.setNumOfRescuers(risk.getNumOfRescuers() - 1);
-            risk.saveInBackground();
             binding.ivDealtRisk.setImageDrawable(getResources().getDrawable(R.drawable.heart_unfilled_button));
         } else {
-            risk.setDealtOrNot(true);
             risk.setNumOfRescuers(risk.getNumOfRescuers() + 1);
-            risk.saveInBackground();
             binding.ivDealtRisk.setImageDrawable(getResources().getDrawable(R.drawable.heart_filled_button));
         }
-        Log.d("SearchDetailFragment", "3 Dealt or Not: " + risk.getDealtOrNot());
+        risk.saveInBackground();
     }
 
     @Override

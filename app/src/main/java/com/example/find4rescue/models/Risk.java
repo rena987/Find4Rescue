@@ -7,6 +7,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+
 import java.util.Date;
 
 @ParseClassName("Risk")
@@ -18,8 +20,9 @@ public class Risk extends ParseObject {
     public static final String KEY_IMAGE = "Image";
     public static final String KEY_RESCUER = "Rescuer";
     public static final String KEY_COORDINATES = "Coordinates";
-    public static final String KEY_DEALTORNOT = "DealtOrNot";
     public static final String KEY_NUMOFRESCUERS = "NumOfRescuers";
+    public static final String KEY_USERNAMES = "Usernames";
+    public static final String KEY_DEALTORNOT = "DealtOrNot";
 
     public Risk() { }
 
@@ -57,12 +60,16 @@ public class Risk extends ParseObject {
 
     public void setCoordinates(String coordinates) { put(KEY_COORDINATES, coordinates); }
 
-    public boolean getDealtOrNot() { return getBoolean(KEY_DEALTORNOT); }
-
-    public void setDealtOrNot(boolean dealtOrNot) { put(KEY_DEALTORNOT, dealtOrNot); }
-
     public int getNumOfRescuers() { return getInt(KEY_NUMOFRESCUERS); }
 
     public void setNumOfRescuers(int numOfRescuers) { put(KEY_NUMOFRESCUERS, numOfRescuers); }
+
+    public JSONArray getUsernames() { return getJSONArray(KEY_USERNAMES); }
+
+    public void setUsernames(JSONArray usernames) { put(KEY_USERNAMES, usernames); }
+
+    public JSONArray getDealtOrNot() { return getJSONArray(KEY_DEALTORNOT); }
+
+    public void setDealtOrNot(JSONArray dealtOrNot) { put(KEY_DEALTORNOT, dealtOrNot); }
 
 }
