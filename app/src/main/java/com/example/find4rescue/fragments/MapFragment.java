@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
@@ -87,9 +88,16 @@ public class MapFragment extends Fragment {
     public static final String TAG = "MapFragment";
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 15;
     private static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 20;
+
     MapView mapView;
+    TextView mapPIN;
+    TextView mapSubdivision;
+    TextView mapAddress;
     ArcGISMap map;
     ShapefileFeatureTable shapefileFeatureTable;
+    GraphicsOverlay overlay;
+    SimpleFillSymbol polyFillSymbol;
+    SimpleLineSymbol polyLineSymbol;
 
 
     public MapFragment() {
@@ -108,8 +116,17 @@ public class MapFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         checkPermissions();
-        loadShapefile(view);
+        ArcGISRuntimeEnvironment.setApiKey("AAPKa9ab0f4101a64687a9607a6ae1476ac8hpV0htXjE3VxcH9PqDX2h0SK83oRgb23gZnKJvI0hpWQwFnx7aUPZ8nQ2cXr8U7f");
 
+        mapPIN = view.findViewById(R.id.mapPIN);
+        mapSubdivision = view.findViewById(R.id.mapSubdivision);
+        mapAddress = view.findViewById(R.id.mapAddress);
+        mapView = view.findViewById(R.id.mapView);
+        map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
+        mapView.setMap(map);
+
+        shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
+        shapefileFeatureTable.loadAsync();
 
         shapefileFeatureTable.addDoneLoadingListener(() -> {
             if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
@@ -121,9 +138,9 @@ public class MapFragment extends Fragment {
                 featureLayer.setRenderer(renderer);
 
                 SimpleMarkerSymbol polyMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
-                SimpleFillSymbol polyFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.CROSS, Color.BLUE, null);
-                SimpleLineSymbol polyLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 3);
-                GraphicsOverlay overlay = new GraphicsOverlay();
+                polyFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.CROSS, Color.BLUE, null);
+                polyLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 3);
+                overlay = new GraphicsOverlay();
 
                 mapView.getGraphicsOverlays().add(overlay);
                 mapView.getMap().getOperationalLayers().add(featureLayer);
@@ -152,15 +169,8 @@ public class MapFragment extends Fragment {
                                        break;
                                    }
                                 }
-                                Geometry converted_feature_ = GeometryEngine.project(wanted_feature_.getGeometry(), SpatialReferences.getWgs84());
-
-                                String coords = converted_feature_.toJson().split(":")[1];
-                                coords = coords.split("\"")[0];
-                                coords = coords.substring(2, coords.length()- 3);
-                                String[] coords2 = coords.split(",");
-                                overlay.getGraphics().add(new Graphic(createPolyline(coords2), polyLineSymbol));
-                                overlay.getGraphics().add(new Graphic(createPolygon(coords2), polyFillSymbol));
-                                mapView.setViewpointGeometryAsync(converted_feature_);
+                                Geometry wanted_polygon_ = GeometryEngine.project(wanted_feature_.getGeometry(), SpatialReferences.getWgs84());
+                                loadParcelInformation(wanted_polygon_, wanted_feature_);
                             } catch (ExecutionException e) {
                                 e.printStackTrace();
                             } catch (InterruptedException e) {
@@ -182,6 +192,33 @@ public class MapFragment extends Fragment {
             }
         });
 
+    }
+
+    private void loadParcelInformation(Geometry polygon, Feature feature) {
+
+        String PIN = (String) feature.getAttributes().get("PIN");
+        String subdivision = (String) feature.getAttributes().get("SUBDIVISIO");
+        String address1 = (String) feature.getAttributes().get("ADDRESS1");
+        String city = (String) feature.getAttributes().get("CITY");
+        String state = (String) feature.getAttributes().get("STATE");
+        String zipcode = (String) feature.getAttributes().get("ZIPCODE");
+
+        mapSubdivision.setText("Subdivision: " + subdivision);
+        mapPIN.setText("PIN: " + PIN);
+        mapAddress.setText("Address: " + address1 + ", " + city + ", " + state + " " + zipcode);
+
+        String[] coordinates = getCoordinates(polygon);
+        overlay.getGraphics().add(new Graphic(createPolyline(coordinates), polyLineSymbol));
+        overlay.getGraphics().add(new Graphic(createPolygon(coordinates), polyFillSymbol));
+        mapView.setViewpointGeometryAsync(polygon);
+    }
+
+    private String[] getCoordinates(Geometry polygon) {
+        String coords = polygon.toJson().split(":")[1];
+        coords = coords.split("\"")[0];
+        coords = coords.substring(2, coords.length()- 3);
+        String[] coords2 = coords.split(",");
+        return coords2;
     }
 
     private void checkPermissions() {
@@ -224,36 +261,21 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void loadShapefile(View view) {
-        ArcGISRuntimeEnvironment.setApiKey("AAPKa9ab0f4101a64687a9607a6ae1476ac8hpV0htXjE3VxcH9PqDX2h0SK83oRgb23gZnKJvI0hpWQwFnx7aUPZ8nQ2cXr8U7f");
-
-        // inflate MapView from layout
-        mapView = view.findViewById(R.id.mapView);
-        // create a map with the BasemapType topographic
-        map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
-        // set the map to be displayed in this view
-        mapView.setMap(map);
-
-        shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
-        shapefileFeatureTable.loadAsync();
-        Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
-    }
-
-    private Polyline createPolyline(String[] coords2) {
-        PointCollection ncCorners = convertToLatLongCollection(coords2);
+    private Polyline createPolyline(String[] coordinates) {
+        PointCollection ncCorners = convertToLatLongCollection(coordinates);
         return new Polyline(ncCorners);
     }
 
-    private Polygon createPolygon(String[] coords2) {
-        PointCollection ncCorners = convertToLatLongCollection(coords2);
+    private Polygon createPolygon(String[] coordinates) {
+        PointCollection ncCorners = convertToLatLongCollection(coordinates);
         return new Polygon(ncCorners);
     }
 
-    private PointCollection convertToLatLongCollection(String[] coords2) {
+    private PointCollection convertToLatLongCollection(String[] coordinates) {
         PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
-        for (int i = 0; i < coords2.length; i = i + 2) {
-            double lat = Double.parseDouble(coords2[i].split("\\[")[1]);
-            double lon = Double.parseDouble(coords2[i + 1].split("\\]")[0]);
+        for (int i = 0; i < coordinates.length; i = i + 2) {
+            double lat = Double.parseDouble(coordinates[i].split("\\[")[1]);
+            double lon = Double.parseDouble(coordinates[i + 1].split("\\]")[0]);
             Point mapPoint = new Point(lat, lon);
             ncCorners.add(mapPoint);
         }

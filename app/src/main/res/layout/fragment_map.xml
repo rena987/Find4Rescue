@@ -11,25 +11,24 @@
         tools:context=".fragments.MapFragment">
 
         <TextView
-            android:id="@+id/mapParcelId"
-            android:layout_width="wrap_content"
+            android:id="@+id/mapPIN"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Parcel ID: 100101010"/>
-        
+            android:hint="PIN: 9880233515"/>
+
         <TextView
-            android:id="@+id/mapPlacename"
-            android:layout_width="wrap_content"
+            android:id="@+id/mapSubdivision"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/mapParcelId"
-            android:layout_marginLeft="15dp"
-            android:hint="Placename: Town of Belgium"/>
+            android:layout_below="@id/mapPIN"
+            android:hint="Subdivision: PARKSIDE"/>
 
         <TextView
             android:id="@+id/mapAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/mapParcelId"
-            android:hint="Address: 123 klajsdf Rd"/>
+            android:layout_below="@id/mapSubdivision"
+            android:hint="Address: 110 GLENMORE RD"/>
 
         <com.esri.arcgisruntime.mapping.view.MapView
             android:id="@+id/mapView"
