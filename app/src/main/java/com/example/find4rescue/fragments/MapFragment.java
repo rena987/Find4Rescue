@@ -30,10 +30,15 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.data.Feature;
+import com.esri.arcgisruntime.data.FeatureQueryResult;
+import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.data.ShapefileFeatureTable;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
@@ -53,6 +58,7 @@ import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleRenderer;
+import com.esri.arcgisruntime.tasks.networkanalysis.Facility;
 import com.example.find4rescue.R;
 import com.example.find4rescue.activities.MainActivity;
 
@@ -62,9 +68,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -79,6 +88,9 @@ public class MapFragment extends Fragment {
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 15;
     private static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 20;
     MapView mapView;
+    ArcGISMap map;
+    ShapefileFeatureTable shapefileFeatureTable;
+
 
     public MapFragment() {
         // Required empty public constructor
@@ -95,9 +107,84 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ArcGISRuntimeEnvironment.setApiKey("AAPKa9ab0f4101a64687a9607a6ae1476ac8hpV0htXjE3VxcH9PqDX2h0SK83oRgb23gZnKJvI0hpWQwFnx7aUPZ8nQ2cXr8U7f");
+        checkPermissions();
+        loadShapefile(view);
 
 
+        shapefileFeatureTable.addDoneLoadingListener(() -> {
+            if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
+
+                FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
+                SimpleLineSymbol pointLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
+                SimpleFillSymbol pointFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, 0, pointLineSymbol);
+                SimpleRenderer renderer = new SimpleRenderer(pointFillSymbol);
+                featureLayer.setRenderer(renderer);
+
+                SimpleMarkerSymbol polyMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
+                SimpleFillSymbol polyFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.CROSS, Color.BLUE, null);
+                SimpleLineSymbol polyLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 3);
+                GraphicsOverlay overlay = new GraphicsOverlay();
+
+                mapView.getGraphicsOverlays().add(overlay);
+                mapView.getMap().getOperationalLayers().add(featureLayer);
+                mapView.setViewpointGeometryAsync(featureLayer.getFullExtent());
+
+                if (getArguments() != null) {
+                    if (getArguments().get("address") != null) {
+                        String address = getArguments().getString("address");
+                        address = address.toUpperCase();
+                        address = "110 GLENMORE RD";
+                        Log.d(TAG, "Address: " + address);
+
+                        featureLayer.clearSelection();
+                        QueryParameters queryParameters = new QueryParameters();
+                        queryParameters.setWhereClause("1=1");
+                        ListenableFuture<FeatureQueryResult> result = shapefileFeatureTable.queryFeaturesAsync(queryParameters);
+                        String finalAddress = address;
+                        result.addDoneListener(() -> {
+                            try {
+                                // call get on the future to get the result
+                                FeatureQueryResult queryResult = result.get();
+                                Feature wanted_feature_ = queryResult.iterator().next();
+                                for (Feature feature : queryResult) {
+                                   if(Objects.equals(feature.getAttributes().get("ADDRESS1"), finalAddress)) {
+                                       wanted_feature_ = feature;
+                                       break;
+                                   }
+                                }
+                                Geometry converted_feature_ = GeometryEngine.project(wanted_feature_.getGeometry(), SpatialReferences.getWgs84());
+
+                                String coords = converted_feature_.toJson().split(":")[1];
+                                coords = coords.split("\"")[0];
+                                coords = coords.substring(2, coords.length()- 3);
+                                String[] coords2 = coords.split(",");
+                                overlay.getGraphics().add(new Graphic(createPolyline(coords2), polyLineSymbol));
+                                overlay.getGraphics().add(new Graphic(createPolygon(coords2), polyFillSymbol));
+                                mapView.setViewpointGeometryAsync(converted_feature_);
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                String error = "Error retrieving list of features: " + e.getMessage();
+                                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                                Log.e(TAG, error);
+                            }
+
+                        });
+
+                    }
+                }
+
+            } else {
+                String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                Log.d(TAG, error);
+                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
+            }
+        });
+
+    }
+
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(getContext(),
                 WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -135,149 +222,43 @@ public class MapFragment extends Fragment {
             // Permission has already been granted
             Log.d(TAG, "READ: Permission already granted");
         }
+    }
 
-//        String path = getContext().getExternalFilesDir(null) + "/Parcels.shp";
-//        File file = new File(path);
-//
-//        try {
-//            FileInputStream fileInputStream = new FileInputStream(file);
-//        } catch (FileNotFoundException e) {
-//            Log.d(TAG, "File not found exception: " + e);
-//            e.printStackTrace();
-//        }
-//
-//        if (file.exists()) {
-//            Log.d(TAG, "File exists: " + file.getAbsolutePath() + " " + file.getName());
-//            Log.d(TAG, "File length: " + file.length());
-//            Log.d(TAG, "File is directory?: " + file.isDirectory());
-//            Log.d(TAG, "File isFile: " + file.isFile());
-//            Log.d(TAG, "File readable?: " + file.canRead());
-//            Log.d(TAG, "File extension: " + file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".")));
-//            Log.d(TAG, "File Free Space: " + file.getFreeSpace());
-//        } else {
-//            Log.d(TAG, "Path doesn't exist!");
-//        }
-
+    private void loadShapefile(View view) {
+        ArcGISRuntimeEnvironment.setApiKey("AAPKa9ab0f4101a64687a9607a6ae1476ac8hpV0htXjE3VxcH9PqDX2h0SK83oRgb23gZnKJvI0hpWQwFnx7aUPZ8nQ2cXr8U7f");
 
         // inflate MapView from layout
         mapView = view.findViewById(R.id.mapView);
         // create a map with the BasemapType topographic
-        ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
+        map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
         // set the map to be displayed in this view
         mapView.setMap(map);
 
-
-        String filepath = getContext().getExternalFilesDir(null) + "/parview.shp";
-        Log.d(TAG, filepath);
-        Log.d(TAG, getContext().getExternalFilesDir(null) + "/parview.shp");
-
-        ShapefileFeatureTable shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
+        shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
         shapefileFeatureTable.loadAsync();
-
-        Log.d(TAG, "" + shapefileFeatureTable.getFields().get(0).getName() + " " + shapefileFeatureTable.getFields().get(1).getName() + " " + shapefileFeatureTable.getTotalFeatureCount());
         Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
+    }
 
+    private Polyline createPolyline(String[] coords2) {
+        PointCollection ncCorners = convertToLatLongCollection(coords2);
+        return new Polyline(ncCorners);
+    }
 
-        shapefileFeatureTable.addDoneLoadingListener(() -> {
-            Log.d(TAG, "listener hello!");
-            if (shapefileFeatureTable.getLoadStatus() == LoadStatus.LOADED) {
-                // zoom the map to the extent of the shapefile
-                FeatureLayer featureLayer = new FeatureLayer(shapefileFeatureTable);
-                Log.d(TAG, "Viewpoint: " + featureLayer.getFullExtent());
-                // create the Symbol
-                SimpleLineSymbol pointLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 1.0f);
-                SimpleFillSymbol pointFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, 0, pointLineSymbol);
+    private Polygon createPolygon(String[] coords2) {
+        PointCollection ncCorners = convertToLatLongCollection(coords2);
+        return new Polygon(ncCorners);
+    }
 
-                // create the Renderer
-                SimpleRenderer renderer = new SimpleRenderer(pointFillSymbol);
-
-                // set the Renderer on the Layer
-                featureLayer.setRenderer(renderer);
-                mapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
-                Log.d(TAG, "Viewpoint zoomed in!");
-                // use the shapefile feature table to create a feature layer
-                mapView.getMap().getOperationalLayers().add(featureLayer);
-                Log.d(TAG, "ShapefileFeatureTable: " + shapefileFeatureTable.getField(shapefileFeatureTable.getFields().get(0).getName()).toJson());
-                SimpleMarkerSymbol polyMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.TRIANGLE, Color.BLUE, 14);
-                SimpleFillSymbol polyFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.CROSS, Color.BLUE, null);
-                SimpleLineSymbol polyLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 3);
-                GraphicsOverlay overlay = new GraphicsOverlay();
-                mapView.getGraphicsOverlays().add(overlay);
-                overlay.getGraphics().add(new Graphic(createPoint(), polyMarkerSymbol));
-                overlay.getGraphics().add(new Graphic(createPolyline(), polyLineSymbol));
-                overlay.getGraphics().add(new Graphic(createPolygon(), polyFillSymbol));
-                //mapView.setViewpointAsync(new Viewpoint(createPoint(), 5000));
-
-            } else {
-                String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
-                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
-                Log.d(TAG, error);
-                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
-            }
-        });
-
-        /*if (!Python.isStarted()) {
-            Python.start(new AndroidPlatform(requireContext()));
+    private PointCollection convertToLatLongCollection(String[] coords2) {
+        PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
+        for (int i = 0; i < coords2.length; i = i + 2) {
+            double lat = Double.parseDouble(coords2[i].split("\\[")[1]);
+            double lon = Double.parseDouble(coords2[i + 1].split("\\]")[0]);
+            Point mapPoint = new Point(lat, lon);
+            ncCorners.add(mapPoint);
         }
-        Python py = Python.getInstance();
-        final PyObject pyobj = py.getModule("ShapefileParser");
-
-        if (getArguments() != null) {
-            if (getArguments().get("address") != null) {
-                String python_filepath_ = "/Users/serenabehera/Downloads/WisconsinParcels/V700_Wisconsin_Parcels_OZAUKEE.shp";
-                String address = getArguments().getString("address");
-                Log.d(TAG, "Address: " + address);
-                PyObject obj = pyobj.callAttr("findAddress", python_filepath_, address);
-                Log.d(TAG, "Successful run: " + obj.toString() + " " + address);
-            }
-        }*/
-
+        return ncCorners;
     }
-
-    private Envelope createEnvelope() {
-        Envelope envelope = new Envelope(-90,  48,  -85,  40, SpatialReferences.getWgs84());
-        return envelope;
-    }
-
-    private Polyline createPolyline() {
-        //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
-        // create a Polygon from a PointCollection
-        PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
-        ncCorners.add(-79.05919625577653, 35.95820156281519);
-        ncCorners.add(  -79.0591964131863,  35.95841694246866);
-        ncCorners.add(-79.05974124954122, 35.95841667543237);
-        ncCorners.add( -79.05974109067762, 35.95820129577909);
-        ncCorners.add(-79.05919625577653, 35.95820156281519);
-        Polyline polygon = new Polyline(ncCorners);
-        //[DocRef: END]
-
-        return polygon;
-    }
-
-    private Polygon createPolygon() {
-        //[DocRef: Name=Create Polygon, Category=Fundamentals, Topic=Geometries]
-        // create a Polygon from a PointCollection
-        PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
-        ncCorners.add(-79.05919625577653, 35.95820156281519);
-        ncCorners.add(  -79.0591964131863,  35.95841694246866);
-        ncCorners.add(-79.05974124954122, 35.95841667543237);
-        ncCorners.add( -79.05974109067762, 35.95820129577909);
-        ncCorners.add(-79.05919625577653, 35.95820156281519);
-        Polygon polygon = new Polygon(ncCorners);
-        //[DocRef: END]
-
-        return polygon;
-    }
-
-    private Point createPoint() {
-        //[DocRef: Name=Create Point, Category=Fundamentals, Topic=Geometries]
-        // create a Point using x,y coordinates and a SpatialReference
-        Point pt = new Point( -87.8692, 43.4209, SpatialReferences.getWgs84());
-        //[DocRef: END]
-
-        return pt;
-    }
-
 
     @Override
     public void onPause() {

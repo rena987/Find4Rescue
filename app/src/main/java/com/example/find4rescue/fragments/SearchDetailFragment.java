@@ -22,6 +22,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,7 +71,7 @@ public class SearchDetailFragment extends Fragment {
         if (image != null) {
             Glide.with(this)
                     .load(image.getUrl())
-                    .into(binding.dtImage);
+                    .into(binding.ivDisasterImage);
         }
 
         Log.d("SearchDetailFragment", "1 Dealt or Not: " + risk.getRescuer().getBoolean("DealtOrNot"));
@@ -137,6 +138,7 @@ public class SearchDetailFragment extends Fragment {
                 break;
             }
         }
+
         return index;
     }
 

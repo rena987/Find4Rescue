@@ -98,7 +98,10 @@ public class SearchFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putParcelable("risk", risks.get(position));
             fragment.setArguments(bundle);
-            getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.flContainer, fragment)
+                    .commit();
         }
     };
 

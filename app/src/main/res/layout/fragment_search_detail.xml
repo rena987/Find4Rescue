@@ -44,7 +44,7 @@
             android:hint="Description: NOODLE FIRE NOODLE FIR ALERT ALERT ALERT!" />
 
         <ImageView
-            android:id="@+id/dtImage"
+            android:id="@+id/ivDisasterImage"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_below="@id/dtDescription"
@@ -57,7 +57,7 @@
             android:id="@+id/dtNumOfRescuers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dtImage"
+            android:layout_below="@id/ivDisasterImage"
             android:layout_marginTop="25dp"
             android:hint="Existing Rescuers: 5"/>
 
