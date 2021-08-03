@@ -36,9 +36,13 @@ The following **required** functionality is completed:
   * [x] Rescuer can view all the details they saw on the search screen plus the number of existing rescuers addressing the risk
   * [x] Rescuer can "like" or press the heart button to indicate to other rescuers that they are also addressing the risk by incrementing the number of existing rescuers displayed 
   * [x] Rescuer can comment and view other rescuers comments on the risk by pressing the "message" button
-  * [ ] Rescuer can **view arcGIS map** by pressing the "map" button 
+  * [x] Rescuer can **view arcGIS map** by pressing the "map" button 
     * [x] Rescuer can view parcel polygon lines of the county they are in (Becker County)
-    * [ ] Rescuer can plot highlighted parcel polygon they have selected to help based on the risk they click on the search view
+    * [x] Rescuer can plot highlighted parcel polygon they have selected to help based on the risk they click on the search view
+    * [x] Rescuer can view details of the highlighted parcel polygon:
+       * [x] Parcel Identification Number
+       * [x] Subdivision
+       * [x] Complete Address
 * [x] Rescuer can press on camera button in the bottom navigation view to take picture in order to:
   * [x] Make new risk
 
