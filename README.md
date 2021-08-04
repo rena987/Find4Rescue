@@ -37,7 +37,7 @@ The following **required** functionality is completed:
   * [x] Rescuer can "like" or press the heart button to indicate to other rescuers that they are also addressing the risk by incrementing the number of existing rescuers displayed 
   * [x] Rescuer can comment and view other rescuers comments on the risk by pressing the "message" button
   * [x] Rescuer can **view arcGIS map** by pressing the "map" button 
-    * [x] Rescuer can view parcel polygon lines of the county they are in (Becker County)
+    * [x] Rescuer can view parcel polygon lines of the county they are in (Orange County)
     * [x] Rescuer can plot highlighted parcel polygon they have selected to help based on the risk they click on the search view
     * [x] Rescuer can view details of the highlighted parcel polygon:
        * [x] Parcel Identification Number
