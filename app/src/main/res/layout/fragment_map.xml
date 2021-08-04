@@ -30,11 +30,19 @@
             android:layout_below="@id/mapSubdivision"
             tools:text="Address: 110 GLENMORE RD"/>
 
+        <TextView
+            android:id="@+id/mapDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mapAddress"
+            android:text="Distance: 2000 miles"/>
+
         <com.esri.arcgisruntime.mapping.view.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/mapAddress"/>
+            android:layout_below="@id/mapDistance"/>
+
 
     </RelativeLayout>
 

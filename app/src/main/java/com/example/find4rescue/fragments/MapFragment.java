@@ -2,9 +2,13 @@ package com.example.find4rescue.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -34,9 +38,16 @@ import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.data.ShapefileFeatureTable;
+import com.esri.arcgisruntime.geometry.AngularUnit;
+import com.esri.arcgisruntime.geometry.AngularUnitId;
+import com.esri.arcgisruntime.geometry.AreaUnit;
 import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.GeodeticCurveType;
+import com.esri.arcgisruntime.geometry.GeodeticDistanceResult;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.LinearUnit;
+import com.esri.arcgisruntime.geometry.LinearUnitId;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
@@ -45,12 +56,14 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.location.LocationDataSource;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
@@ -73,6 +86,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -85,16 +100,22 @@ public class MapFragment extends Fragment {
     public static final String TAG = "MapFragment";
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 15;
     private static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 20;
+    private static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 18;
+    public static final int MY_PERMISSIONS_ACCESS_COARSE_LOCATION = 19;
 
     MapView mapView;
     TextView mapPIN;
     TextView mapSubdivision;
     TextView mapAddress;
+    TextView mapDistance;
     ArcGISMap map;
     ShapefileFeatureTable shapefileFeatureTable;
     GraphicsOverlay overlay;
     SimpleFillSymbol polyFillSymbol;
     SimpleLineSymbol polyLineSymbol;
+    Geometry polygon;
+    double currentLatitude;
+    double currentLongitude;
 
 
     public MapFragment() {
@@ -119,6 +140,7 @@ public class MapFragment extends Fragment {
         mapSubdivision = view.findViewById(R.id.mapSubdivision);
         mapAddress = view.findViewById(R.id.mapAddress);
         mapView = view.findViewById(R.id.mapView);
+        mapDistance = view.findViewById(R.id.mapDistance);
         map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
 
         mapView.setMap(map);
@@ -152,7 +174,6 @@ public class MapFragment extends Fragment {
                     if (getArguments().get("address") != null) {
                         String address = getArguments().getString("address");
                         address = address.toUpperCase();
-                        address = "110 GLENMORE RD";
 
                         featureLayer.clearSelection();
                         QueryParameters queryParameters = new QueryParameters();
@@ -165,12 +186,13 @@ public class MapFragment extends Fragment {
                                 FeatureQueryResult queryResult = result.get();
                                 Feature wanted_feature_ = queryResult.iterator().next();
                                 for (Feature feature : queryResult) {
-                                   if(Objects.equals(feature.getAttributes().get("ADDRESS1"), finalAddress)) {
-                                       wanted_feature_ = feature;
-                                       break;
-                                   }
+                                    if (Objects.equals(feature.getAttributes().get("ADDRESS1"), finalAddress)) {
+                                        wanted_feature_ = feature;
+                                        break;
+                                    }
                                 }
                                 loadParcelInformation(wanted_feature_);
+                                calculateCurrentDistance();
                             } catch (ExecutionException e) {
                                 e.printStackTrace();
                             } catch (InterruptedException e) {
@@ -181,6 +203,7 @@ public class MapFragment extends Fragment {
 
                         });
 
+
                     }
                 }
 
@@ -188,15 +211,34 @@ public class MapFragment extends Fragment {
                 String error = "Shapefile feature table failed to load: " + shapefileFeatureTable.getLoadError().toString();
                 Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
                 Log.d(TAG, error);
-                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus()+"|"+shapefileFeatureTable.getLoadError());
+                Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus() + "|" + shapefileFeatureTable.getLoadError());
             }
         });
 
     }
 
+    private void calculateCurrentDistance() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            checkPermissions();
+            return;
+        }
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Point currentLocation = new Point(locationGPS.getLatitude(), locationGPS.getLongitude(), SpatialReferences.getWgs84());
+
+        String coordinates = getArguments().getString("coordinates");
+        double givenLatitude = Double.parseDouble(coordinates.split(",")[0]);
+        double givenLongitude = Double.parseDouble(coordinates.split(",")[1]);
+        Point givenLocation = new Point(givenLatitude, givenLongitude, SpatialReferences.getWgs84());
+
+        GeodeticDistanceResult distance = GeometryEngine.distanceGeodetic(currentLocation, givenLocation, new LinearUnit(LinearUnitId.MILES), new AngularUnit(AngularUnitId.DEGREES), GeodeticCurveType.GEODESIC);
+        Log.d(TAG, "" + distance.getDistance());
+        mapDistance.setText("Current Distance: " + distance.getDistance() + " miles");
+    }
+
     private void loadParcelInformation(Feature feature) {
 
-        Geometry polygon = GeometryEngine.project(feature.getGeometry(), SpatialReferences.getWgs84());
+        polygon = GeometryEngine.project(feature.getGeometry(), SpatialReferences.getWgs84());
 
         String PIN = (String) feature.getAttributes().get("PIN");
         String subdivision = (String) feature.getAttributes().get("SUBDIVISIO");
@@ -224,6 +266,45 @@ public class MapFragment extends Fragment {
     }
 
     private void checkPermissions() {
+
+        if (ContextCompat.checkSelfPermission(getContext(),
+                ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Log.d(TAG, "COARSE LOCATION: No permission at first");
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    ACCESS_COARSE_LOCATION)) {
+                Log.d(TAG, "COARSE LOCATION: Requesting permission");
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_ACCESS_COARSE_LOCATION);
+            }
+        } else {
+            // Permission has already been granted
+            Log.d(TAG, "COARSE LOCATION: Permission already granted");
+        }
+
+        if (ContextCompat.checkSelfPermission(getContext(),
+                ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Log.d(TAG, "FINE LOCATION: No permission at first");
+
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    ACCESS_FINE_LOCATION)) {
+                Log.d(TAG, "FINE LOCATION: Requesting permission");
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_ACCESS_FINE_LOCATION);
+            }
+        } else {
+            // Permission has already been granted
+            Log.d(TAG, "FINE LOCATION: Permission already granted");
+        }
+
         if (ContextCompat.checkSelfPermission(getContext(),
                 WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

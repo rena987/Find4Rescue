@@ -120,6 +120,7 @@ public class SearchDetailFragment extends Fragment {
                 MapFragment fragment = new MapFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("address", risk.getAddress());
+                bundle.putString("coordinates", risk.getCoordinates());
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
             }
