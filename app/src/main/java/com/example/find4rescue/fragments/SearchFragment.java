@@ -13,9 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.find4rescue.R;
 import com.example.find4rescue.adapters.RiskAdapter;
 import com.example.find4rescue.models.Risk;
@@ -23,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;

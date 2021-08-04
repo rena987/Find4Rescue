@@ -1,10 +1,12 @@
 package com.example.find4rescue.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.transition.TransitionInflater;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,8 @@ public class SearchDetailFragment extends Fragment {
 
     public static final String TAG = "SearchDetailFrag";
 
+    public static final String KEY_RISK = "risk";
+    public static final String KEY_TRANSITION = "transitionName";
     FragmentSearchDetailBinding binding;
 
     public SearchDetailFragment() {
@@ -60,7 +64,8 @@ public class SearchDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Risk risk = getArguments().getParcelable("risk");
+        Risk risk = getArguments().getParcelable(KEY_RISK);
+
         binding.dtAddress.setText("Address: " + risk.getAddress());
         binding.dtType.setText("Type: " + risk.getType());
         binding.dtRescuer.setText("Reported by: " + risk.getRescuer().getUsername());

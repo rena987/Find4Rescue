@@ -14,21 +14,21 @@
             android:id="@+id/mapPIN"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="PIN: 9880233515"/>
+            tools:text="PIN: 9880233515"/>
 
         <TextView
             android:id="@+id/mapSubdivision"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mapPIN"
-            android:hint="Subdivision: PARKSIDE"/>
+            tools:text="Subdivision: PARKSIDE"/>
 
         <TextView
             android:id="@+id/mapAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/mapSubdivision"
-            android:hint="Address: 110 GLENMORE RD"/>
+            tools:text="Address: 110 GLENMORE RD"/>
 
         <com.esri.arcgisruntime.mapping.view.MapView
             android:id="@+id/mapView"

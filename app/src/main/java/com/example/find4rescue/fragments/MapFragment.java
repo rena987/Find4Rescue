@@ -27,9 +27,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
@@ -123,7 +120,12 @@ public class MapFragment extends Fragment {
         mapAddress = view.findViewById(R.id.mapAddress);
         mapView = view.findViewById(R.id.mapView);
         map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
+
         mapView.setMap(map);
+        mapPIN.setText("");
+        mapSubdivision.setText("");
+        mapAddress.setText("");
+
 
         shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
         shapefileFeatureTable.loadAsync();
@@ -151,7 +153,6 @@ public class MapFragment extends Fragment {
                         String address = getArguments().getString("address");
                         address = address.toUpperCase();
                         address = "110 GLENMORE RD";
-                        Log.d(TAG, "Address: " + address);
 
                         featureLayer.clearSelection();
                         QueryParameters queryParameters = new QueryParameters();
@@ -169,8 +170,7 @@ public class MapFragment extends Fragment {
                                        break;
                                    }
                                 }
-                                Geometry wanted_polygon_ = GeometryEngine.project(wanted_feature_.getGeometry(), SpatialReferences.getWgs84());
-                                loadParcelInformation(wanted_polygon_, wanted_feature_);
+                                loadParcelInformation(wanted_feature_);
                             } catch (ExecutionException e) {
                                 e.printStackTrace();
                             } catch (InterruptedException e) {
@@ -194,7 +194,9 @@ public class MapFragment extends Fragment {
 
     }
 
-    private void loadParcelInformation(Geometry polygon, Feature feature) {
+    private void loadParcelInformation(Feature feature) {
+
+        Geometry polygon = GeometryEngine.project(feature.getGeometry(), SpatialReferences.getWgs84());
 
         String PIN = (String) feature.getAttributes().get("PIN");
         String subdivision = (String) feature.getAttributes().get("SUBDIVISIO");
@@ -262,16 +264,16 @@ public class MapFragment extends Fragment {
     }
 
     private Polyline createPolyline(String[] coordinates) {
-        PointCollection ncCorners = convertToLatLongCollection(coordinates);
+        PointCollection ncCorners = retrievePoints(coordinates);
         return new Polyline(ncCorners);
     }
 
     private Polygon createPolygon(String[] coordinates) {
-        PointCollection ncCorners = convertToLatLongCollection(coordinates);
+        PointCollection ncCorners = retrievePoints(coordinates);
         return new Polygon(ncCorners);
     }
 
-    private PointCollection convertToLatLongCollection(String[] coordinates) {
+    private PointCollection retrievePoints(String[] coordinates) {
         PointCollection ncCorners = new PointCollection(SpatialReferences.getWgs84());
         for (int i = 0; i < coordinates.length; i = i + 2) {
             double lat = Double.parseDouble(coordinates[i].split("\\[")[1]);

@@ -13,9 +13,16 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.find4rescue.R;
+import com.example.find4rescue.models.Risk;
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+
+import org.json.JSONArray;
+
+import java.util.List;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -65,6 +72,7 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.put("RescuerOrNo", rescuerOrNo);
+
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
@@ -72,6 +80,23 @@ public class SignupActivity extends AppCompatActivity {
                     Log.e(TAG, "Sign Up issue: " + e);
                     Toast.makeText(SignupActivity.this, "Issue with Sign Up!", Toast.LENGTH_SHORT).show();
                 } else {
+
+                    ParseQuery<Risk> query = ParseQuery.getQuery(Risk.class);
+                    query.findInBackground(new FindCallback<Risk>() {
+                        @Override
+                        public void done(List<Risk> objects, ParseException e) {
+                            for (Risk risk : objects) {
+                                JSONArray usernames = risk.getUsernames();
+                                JSONArray dealtOrNot = risk.getDealtOrNot();
+                                usernames.put(username);
+                                dealtOrNot.put("False");
+                                risk.setDealtOrNot(dealtOrNot);
+                                risk.setUsernames(usernames);
+                                risk.saveInBackground();
+                            }
+                        }
+                    });
+
                     goMainActivity();
                     Toast.makeText(SignupActivity.this, "Successful Sign Up!", Toast.LENGTH_SHORT).show();
                 }
