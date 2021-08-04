@@ -24,15 +24,15 @@ The following **required** functionality is completed:
      * [x] Address
      * [x] Type
      * [x] Description
-     * [ ] Image
-       * [ ] Rescuer can attach an image from their drive 
+     * [x] Image
+       * [x] Rescuer can attach an image from their drive 
        * [x] Rescuer can take picture from their device
    * [x] Rescuer can filter out risks based on most recent and rescuers needed
    * [ ] Rescuer can double tap on a risk to address it (gesture) 
-* [ ] Rescuer can **view a detailed view** of each risk in the Search View 
-  * [ ] Rescuer can access the detailed view by:
+* [x] Rescuer can **view a detailed view** of each risk in the Search View 
+  * [x] Rescuer can access the detailed view by:
     * [x] Tap on individual risk from the search view 
-    * [ ] Open search detail view using shared element transition (Animation) 
+    * [x] Open search detail view using shared element transition (Animation) 
   * [x] Rescuer can view all the details they saw on the search screen plus the number of existing rescuers addressing the risk
   * [x] Rescuer can "like" or press the heart button to indicate to other rescuers that they are also addressing the risk by incrementing the number of existing rescuers displayed 
   * [x] Rescuer can comment and view other rescuers comments on the risk by pressing the "message" button
