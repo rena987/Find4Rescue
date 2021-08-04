@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -96,13 +97,15 @@ public class SearchFragment extends Fragment {
 
     RiskAdapter.OnRiskClickListener onRiskClickListener = new RiskAdapter.OnRiskClickListener() {
         @Override
-        public void onRiskClick(int position) {
+        public void onRiskClick(int position, Risk risk, ImageView imageView) {
             SearchDetailFragment fragment = new SearchDetailFragment();
             Bundle bundle = new Bundle();
             bundle.putParcelable("risk", risks.get(position));
+            bundle.putString("transitionName", ViewCompat.getTransitionName(imageView));
             fragment.setArguments(bundle);
             getFragmentManager()
                     .beginTransaction()
+                    .addSharedElement(imageView, ViewCompat.getTransitionName(imageView))
                     .replace(R.id.flContainer, fragment)
                     .commit();
         }

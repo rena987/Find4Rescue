@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +32,7 @@ import java.util.Locale;
 public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
 
     public interface OnRiskClickListener {
-        void onRiskClick(int position);
+        void onRiskClick(int position, Risk risk, ImageView imageView);
     }
 
     Context context;
@@ -61,7 +62,16 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull RiskAdapter.ViewHolder holder, int position) {
         Log.d("RiskAdapter", "OnBindViewHolder: " + position);
         Risk risk = risks.get(position);
+
+        ViewCompat.setTransitionName(holder.ivDisasterImage, risk.getDescription());
         holder.bind(risk);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onRiskClick(holder.getAdapterPosition(), risk, holder.ivDisasterImage);
+            }
+        });
     }
 
     @Override
@@ -81,7 +91,7 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvDescription;
         TextView tvType;
@@ -90,7 +100,6 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         ImageView ivDisasterImage;
         TextView tvTimestamp;
         OnRiskClickListener onRiskClickListener;
-        LinearLayout row_linearlayout;
 
         public ViewHolder(@NonNull View itemView, OnRiskClickListener listener) {
             super(itemView);
@@ -101,7 +110,6 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             ivDisasterImage = itemView.findViewById(R.id.ivDisasterImage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             onRiskClickListener = listener;
-            itemView.setOnClickListener(this);
         }
 
         public void bind(Risk risk) {
@@ -155,9 +163,5 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             return "";
         }
 
-        @Override
-        public void onClick(View v) {
-            onRiskClickListener.onRiskClick(getAdapterPosition());
-        }
     }
 }

@@ -24,6 +24,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -50,6 +51,8 @@ public class SearchDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        postponeEnterTransition();
+        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     }
 
     @Override
@@ -65,6 +68,7 @@ public class SearchDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Risk risk = getArguments().getParcelable(KEY_RISK);
+        String transitionName = getArguments().getString(KEY_TRANSITION);
 
         binding.dtAddress.setText("Address: " + risk.getAddress());
         binding.dtType.setText("Type: " + risk.getType());
@@ -78,6 +82,24 @@ public class SearchDetailFragment extends Fragment {
                     .load(image.getUrl())
                     .into(binding.ivDisasterImage);
         }
+
+        binding.ivDisasterImage.setTransitionName(transitionName);
+
+        Picasso.get()
+                .load(image.getUrl())
+                .noFade()
+                .into(binding.ivDisasterImage, new Callback() {
+            @Override
+            public void onSuccess() {
+                startPostponedEnterTransition();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                startPostponedEnterTransition();
+            }
+        });
+
 
         Log.d("SearchDetailFragment", "1 Dealt or Not: " + risk.getRescuer().getBoolean("DealtOrNot"));
 
