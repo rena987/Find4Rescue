@@ -37,7 +37,6 @@ public class CameraFragment extends Fragment {
     public File photoFile;
     public String photoFileName = "photo.jpg";
     Button btnNewRisk;
-    Button btnComment;
 
 
     public CameraFragment() {
@@ -62,15 +61,7 @@ public class CameraFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        btnNewRisk = view.findViewById(R.id.btnNewRisk);
-        btnComment = view.findViewById(R.id.btnComment);
-
-        btnNewRisk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchCamera();
-            }
-        });
+        launchCamera();
     }
 
     private void launchCamera() {

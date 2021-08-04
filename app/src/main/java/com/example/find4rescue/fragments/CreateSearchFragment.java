@@ -1,16 +1,21 @@
 package com.example.find4rescue.fragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -36,7 +41,11 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -56,6 +65,7 @@ public class CreateSearchFragment extends Fragment {
     private Button btnCreateAddRisk;
 
     public static final String TAG = "MakeRisk";
+    public final static int PICK_PHOTO_REQUEST_CODE = 1046;
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 37;
     public File photoFile;
     public String photoFileName = "photo.jpg";
@@ -101,6 +111,13 @@ public class CreateSearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 launchCamera();
+            }
+        });
+
+        btnAttachImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPickPhoto(v);
             }
         });
 
@@ -225,19 +242,13 @@ public class CreateSearchFragment extends Fragment {
         }
     }
 
-    // Returns the File for a photo stored on disk given the fileName
     public File getPhotoFileUri(String fileName) {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
         File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
-        // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
             Log.d(TAG, "failed to create directory");
         }
 
-        // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
     }
 
@@ -246,14 +257,46 @@ public class CreateSearchFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                // RESIZE BITMAP, see section below
-                // Load the taken image into a preview
                 ivCreateImage.setImageBitmap(takenImage);
-            } else { // Result was a failure
+            } else {
                 Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == PICK_PHOTO_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Uri photoUri = data.getData();
+                Bitmap selectedImage = loadFromUri(photoUri);
+
+                ivCreateImage.setImageBitmap(selectedImage);
+            } else {
+                Toast.makeText(getContext(), "Invalid uploaded picture!", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+    public void onPickPhoto(View view) {
+
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, PICK_PHOTO_REQUEST_CODE);
+        }
+    }
+
+    public Bitmap loadFromUri(Uri photoUri) {
+        Bitmap image = null;
+        try {
+            if(Build.VERSION.SDK_INT > 27){
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
+                image = ImageDecoder.decodeBitmap(source);
+            } else {
+                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
 }

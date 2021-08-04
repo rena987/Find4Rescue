@@ -218,10 +218,12 @@ public class MapFragment extends Fragment {
     }
 
     private void calculateCurrentDistance() {
+
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             checkPermissions();
             return;
         }
+
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Point currentLocation = new Point(locationGPS.getLatitude(), locationGPS.getLongitude(), SpatialReferences.getWgs84());
@@ -232,7 +234,6 @@ public class MapFragment extends Fragment {
         Point givenLocation = new Point(givenLatitude, givenLongitude, SpatialReferences.getWgs84());
 
         GeodeticDistanceResult distance = GeometryEngine.distanceGeodetic(currentLocation, givenLocation, new LinearUnit(LinearUnitId.MILES), new AngularUnit(AngularUnitId.DEGREES), GeodeticCurveType.GEODESIC);
-        Log.d(TAG, "" + distance.getDistance());
         mapDistance.setText("Current Distance: " + distance.getDistance() + " miles");
     }
 
