@@ -49,7 +49,7 @@ The following **required** functionality is completed:
 The following **stretch** features are implemented:
 
 * [ ] Rescuer sees an **indeterminate progress indicator** when any background or network task is happening
-* [ ] Rescuer can find the distance between themselves and the risk they are dealing with on arcGIS map 
+* [x] Rescuer can find the distance between themselves and the risk they are dealing with on arcGIS map 
 * [ ] Rescuer can search for a "risk" based on type
 * [ ] Rescuer can view more people at risk as they scroll with infinite pagination
 * [ ] "Person in need" has there own login where they can chat with rescuers 
