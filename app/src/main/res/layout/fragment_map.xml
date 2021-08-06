@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         tools:context=".fragments.MapFragment">
 
+
         <TextView
             android:id="@+id/mapPIN"
             android:layout_width="match_parent"

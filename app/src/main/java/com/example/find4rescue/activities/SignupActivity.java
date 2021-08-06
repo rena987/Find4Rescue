@@ -13,6 +13,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.find4rescue.R;
+import com.example.find4rescue.models.Comments;
 import com.example.find4rescue.models.Risk;
 import com.parse.FindCallback;
 import com.parse.ParseException;

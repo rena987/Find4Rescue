@@ -35,19 +35,25 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
         void onRiskClick(int position, Risk risk, ImageView imageView);
     }
 
+    public interface OnRiskLongClickListener {
+        boolean onRiskLongClicked(int position, Risk risk);
+    }
+
     Context context;
     List<Risk> risks;
     OnRiskClickListener listener;
+    OnRiskLongClickListener longListener;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    public RiskAdapter(Context context, List<Risk> risks, OnRiskClickListener listener) {
+    public RiskAdapter(Context context, List<Risk> risks, OnRiskClickListener listener, OnRiskLongClickListener longListener) {
         this.context = context;
         this.risks = risks;
         this.listener = listener;
+        this.longListener = longListener;
     }
 
     @NonNull
@@ -70,6 +76,14 @@ public class RiskAdapter extends RecyclerView.Adapter<RiskAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 listener.onRiskClick(holder.getAdapterPosition(), risk, holder.ivDisasterImage);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                longListener.onRiskLongClicked(holder.getAdapterPosition(), risk);
+                return true;
             }
         });
     }

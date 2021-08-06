@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "504210695398",
+    "project_id": "find4rescue",
+    "storage_bucket": "find4rescue.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504210695398:android:69ad9ed12e0f2d77f2c727",
+        "android_client_info": {
+          "package_name": "com.example.find4rescue"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "504210695398-v6ru0don9ao5te21n9qjgfovqjhke745.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgQGnAMZNrCB9AGW393-rqeAy9KOCgX8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "504210695398-v6ru0don9ao5te21n9qjgfovqjhke745.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

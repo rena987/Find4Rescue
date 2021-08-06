@@ -44,7 +44,6 @@
 
     </LinearLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRisks"
         android:layout_below="@id/llSort"

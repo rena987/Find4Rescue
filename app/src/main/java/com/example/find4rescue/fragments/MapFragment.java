@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,11 +24,15 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +75,10 @@ import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleRenderer;
 import com.esri.arcgisruntime.tasks.networkanalysis.Facility;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteParameters;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
+import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import com.example.find4rescue.R;
 import com.example.find4rescue.activities.MainActivity;
 
@@ -79,6 +88,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -109,11 +119,16 @@ public class MapFragment extends Fragment {
     TextView mapAddress;
     TextView mapDistance;
     ArcGISMap map;
+    Switch stMap;
     ShapefileFeatureTable shapefileFeatureTable;
     GraphicsOverlay overlay;
     SimpleFillSymbol polyFillSymbol;
     SimpleLineSymbol polyLineSymbol;
     Geometry polygon;
+
+    TextToSpeech textToSpeech;
+    boolean isTextToSpeechInitialized;
+
     double currentLatitude;
     double currentLongitude;
 
@@ -147,8 +162,39 @@ public class MapFragment extends Fragment {
         mapPIN.setText("");
         mapSubdivision.setText("");
         mapAddress.setText("");
+        mapDistance.setText("");
 
+        mapPIN.setVisibility(View.INVISIBLE);
+        mapSubdivision.setVisibility(View.INVISIBLE);
+        mapAddress.setVisibility(View.INVISIBLE);
+        mapDistance.setVisibility(View.INVISIBLE);
 
+        loadParcels();
+
+    }
+
+    private List<Stop> getStops() {
+        List<Stop> stops = new ArrayList<>(2);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            checkPermissions();
+        }
+
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Point currentLocation = new Point(locationGPS.getLatitude(), locationGPS.getLongitude(), SpatialReferences.getWgs84());
+        stops.add(new Stop(currentLocation));
+
+        String coordinates = getArguments().getString("coordinates");
+        double givenLatitude = Double.parseDouble(coordinates.split(",")[0]);
+        double givenLongitude = Double.parseDouble(coordinates.split(",")[1]);
+        Point givenLocation = new Point(givenLatitude, givenLongitude, SpatialReferences.getWgs84());
+        stops.add(new Stop(givenLocation));
+
+        return stops;
+    }
+
+    private void loadParcels() {
         shapefileFeatureTable = new ShapefileFeatureTable(getContext().getExternalFilesDir(null) + "/parview.shp");
         shapefileFeatureTable.loadAsync();
 
@@ -214,7 +260,6 @@ public class MapFragment extends Fragment {
                 Log.d(TAG, shapefileFeatureTable.getPath() + "|" + shapefileFeatureTable.getLoadStatus() + "|" + shapefileFeatureTable.getLoadError());
             }
         });
-
     }
 
     private void calculateCurrentDistance() {
@@ -247,6 +292,11 @@ public class MapFragment extends Fragment {
         String city = (String) feature.getAttributes().get("CITY");
         String state = (String) feature.getAttributes().get("STATE");
         String zipcode = (String) feature.getAttributes().get("ZIPCODE");
+
+        mapPIN.setVisibility(View.VISIBLE);
+        mapSubdivision.setVisibility(View.VISIBLE);
+        mapAddress.setVisibility(View.VISIBLE);
+        mapDistance.setVisibility(View.VISIBLE);
 
         mapSubdivision.setText("Subdivision: " + subdivision);
         mapPIN.setText("PIN: " + PIN);

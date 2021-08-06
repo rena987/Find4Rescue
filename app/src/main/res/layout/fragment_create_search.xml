@@ -118,14 +118,21 @@
         android:layout_marginTop="20dp"
         tools:src="@tools:sample/avatars" />
 
-    <Button
+
+    <com.sanojpunchihewa.glowbutton.GlowButton
         android:id="@+id/btnCreateAddRisk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivCreateImage"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/white"
         android:layout_marginTop="21dp"
         android:backgroundTint="@color/crayolas_gold"
         android:text="Add Risk" />
+
 
 
 </RelativeLayout>

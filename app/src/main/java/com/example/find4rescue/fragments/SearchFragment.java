@@ -4,13 +4,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -25,7 +31,9 @@ import com.example.find4rescue.models.Risk;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -79,7 +87,7 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        riskAdapter = new RiskAdapter(getContext(), risks, onRiskClickListener);
+        riskAdapter = new RiskAdapter(getContext(), risks, onRiskClickListener, onRiskLongClickListener);
         rvRisks.setAdapter(riskAdapter);
         rvRisks.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -111,6 +119,39 @@ public class SearchFragment extends Fragment {
         }
     };
 
+    RiskAdapter.OnRiskLongClickListener onRiskLongClickListener = new RiskAdapter.OnRiskLongClickListener() {
+        @Override
+        public boolean onRiskLongClicked(int position, Risk risk) {
+            if (ParseUser.getCurrentUser().getUsername().equals(risk.getRescuer().getUsername())) {
+                Log.d(TAG, "Long clicked: " + position);
+                risks.remove(position);
+                riskAdapter.notifyDataSetChanged();
+                deleteRisk(risk);
+                return true;
+            } else {
+                Log.d(TAG, "No access to risk!");
+                return false;
+            }
+        }
+    };
+
+    private void deleteRisk(Risk risk) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Risk");
+        query.getInBackground(risk.getObjectId(), (object, e) -> {
+            if (e == null) {
+                object.deleteInBackground(e2 -> {
+                    if(e2==null){
+                        Log.d(TAG,"Delete Successful");
+                    }else{
+                        Log.d(TAG,"Error: "+e2.getMessage());
+                    }
+                });
+            }else{
+                Log.d(TAG, "Error: "+e.getMessage());
+            }
+        });
+    }
+
     private void queryRisks(boolean isChecked) {
         ParseQuery<Risk> query = ParseQuery.getQuery(Risk.class);
         query.include(Risk.KEY_RESCUER);
@@ -130,15 +171,9 @@ public class SearchFragment extends Fragment {
                     Log.e(TAG, "Issue with getting risks: " + e);
                     return;
                 }
-
-                for (Risk risk : objects) {
-                    Log.i(TAG, "Risk: " + risk.getAddress() + ", username: " + risk.getRescuer().getUsername());
-                }
-
                 risks.addAll(objects);
                 riskAdapter.notifyDataSetChanged();
             }
         });
     }
-
 }

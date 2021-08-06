@@ -39,6 +39,9 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.w3c.dom.Comment;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -168,6 +171,8 @@ public class CreateSearchFragment extends Fragment {
 
         Comments comment = new Comments();
         comment.setRisk(risk);
+        comment.setUsernames(new JSONArray());
+        comment.setMessages(new JSONArray());
         comment.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
